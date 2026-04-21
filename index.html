@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QCC Expansión Online 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;font-size:13px;background:#f5f5f3;color:#1a1a18;padding:1.2rem}
+h1{font-size:16px;font-weight:600;margin-bottom:.75rem}
+.top-bar{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.top-bar .csv-status{font-size:12px;color:#5f5e5a;flex:1}
+.top-bar .csv-status strong{color:#1a1a18}
+.btn{padding:5px 12px;border:1px solid #ccc;border-radius:6px;background:#fff;color:#1a1a18;font-size:12px;cursor:pointer;height:32px;white-space:nowrap}
+.btn:hover{background:#f1efe8}
+.btn-primary{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.btn-primary:hover{background:#333}
+.btn-green{background:#27500A;color:#fff;border-color:#27500A}
+.btn-green:hover{background:#3B6D11}
+.btn-warn{background:#FAEEDA;color:#633806;border-color:#EF9F27}
+.btn-warn:hover{background:#FAC775}
+.sync-status{font-size:11px;padding:2px 8px;border-radius:4px;display:inline-block}
+.sync-ok{background:#EAF3DE;color:#27500A}
+.sync-err{background:#FCEBEB;color:#791F1F}
+.sync-loading{background:#E6F1FB;color:#0C447C}
+.drop-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
+.drop-overlay.show{display:flex}
+.drop-box{background:#fff;border-radius:12px;padding:2.5rem 3rem;text-align:center;width:420px;max-width:90vw}
+.drop-box h2{font-size:15px;font-weight:600;margin-bottom:.5rem}
+.drop-box p{font-size:12px;color:#888;margin-bottom:1.5rem}
+.drop-area{border:2px dashed #ccc;border-radius:8px;padding:1.5rem;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:1rem}
+.drop-area:hover,.drop-area.active{border-color:#378ADD;background:#E6F1FB}
+.drop-area input{display:none}
+.drop-area p{color:#888;font-size:12px;margin:0}
+.drop-area strong{color:#1a1a18}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+select,input[type=text]{padding:5px 9px;border:1px solid #ccc;border-radius:6px;font-size:12px;background:#fff;color:#1a1a18;height:32px}
+input[type=text]{min-width:155px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
+.stat{background:#fff;border:1px solid #d3d1c7;border-radius:8px;padding:9px 12px}
+.stat-label{font-size:11px;color:#888;margin-bottom:2px}
+.stat-value{font-size:21px;font-weight:600}
+.tbl-wrap{overflow-x:auto;border:1px solid #d3d1c7;border-radius:10px;background:#fff}
+table{width:100%;border-collapse:collapse;min-width:1020px}
+th{background:#f1efe8;color:#5f5e5a;font-weight:600;font-size:11px;padding:7px 8px;text-align:left;border-bottom:1px solid #d3d1c7;white-space:nowrap;position:sticky;top:0;z-index:2}
+th.editable-col{color:#185FA5}
+td{padding:5px 8px;border-bottom:1px solid #efefeb;vertical-align:top;color:#1a1a18}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#faf9f7}
+tr.cp-match td{background:#fffbe6}
+.badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:5px;font-weight:500;white-space:nowrap}
+.b-green{background:#EAF3DE;color:#27500A}
+.b-red{background:#FCEBEB;color:#791F1F}
+.b-blue{background:#E6F1FB;color:#0C447C}
+.b-amber{background:#FAEEDA;color:#633806}
+.b-gray{background:#F1EFE8;color:#444441}
+.b-teal{background:#E1F5EE;color:#085041}
+.editable-cell{cursor:pointer;min-height:18px;border-radius:4px;padding:2px 4px;display:block;white-space:pre-wrap}
+.editable-cell:hover{background:#e8e8e4}
+.editable-cell:focus{outline:2px solid #378ADD;background:#fff;border-radius:4px}
+.editable-cell.empty-cell{color:#bbb;font-style:italic;font-size:11px;white-space:normal}
+.editable-cell.from-qcc{background:#f0faf5}
+.saved-badge{font-size:11px;color:#27500A;background:#EAF3DE;padding:2px 8px;border-radius:4px;display:none}
+.cps-cell{font-size:11px;line-height:1.5;word-break:break-all}
+.cp-highlight{background:#fff59d;border-radius:3px;padding:0 2px;font-weight:600}
+.info-bar{margin-top:8px;font-size:11px;color:#888;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.notice{font-size:11px;border-radius:6px;padding:6px 12px;margin-bottom:10px}
+.notice-blue{background:#E6F1FB;color:#0C447C;border:1px solid #B5D4F4}
+.notice-green{background:#EAF3DE;color:#27500A;border:1px solid #C0DD97}
+.notice-red{background:#FCEBEB;color:#791F1F;border:1px solid #F7C1C1}
+</style>
+</head>
+<body>
+
+<h1>QCC Expansión Tiendas Mercadona Online 2026</h1>
+
+<div class="top-bar">
+  <div class="csv-status" id="csvStatus">Cargando datos...</div>
+  <span class="sync-status sync-loading" id="syncStatus">Conectando con Drive...</span>
+  <button class="btn btn-warn" onclick="showDropOverlay()">Actualizar CSV</button>
+  <button class="btn" onclick="exportCSV()">Exportar CSV</button>
+  <button class="btn btn-primary" onclick="exportXLSX()">Exportar XLSX</button>
+  <span class="saved-badge" id="saved-badge">Guardado</span>
+</div>
+
+<div id="noticeArea"></div>
+
+<div class="toolbar">
+  <select id="sel-mes">
+    <option value="">Todos los meses</option>
+    <option value="1">Enero</option><option value="2">Febrero</option>
+    <option value="3">Marzo</option><option value="4">Abril</option>
+    <option value="5">Mayo</option><option value="6">Junio</option>
+    <option value="7">Julio</option><option value="8">Agosto</option>
+    <option value="9">Septiembre</option><option value="10">Octubre</option>
+    <option value="11">Noviembre</option><option value="12">Diciembre</option>
+  </select>
+  <select id="sel-tipo"><option value="">Todos los escenarios</option></select>
+  <select id="sel-zona"><option value="">Todas las zonas</option></select>
+  <input type="text" id="buscar" placeholder="Buscar centro, población...">
+  <input type="text" id="buscar-cp" placeholder="Buscar código postal...">
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-label">Total movimientos</div><div class="stat-value" id="st-total">—</div></div>
+  <div class="stat"><div class="stat-label">Aperturas / altas</div><div class="stat-value" id="st-altas">—</div></div>
+  <div class="stat"><div class="stat-label">Ampliaciones</div><div class="stat-value" id="st-amp">—</div></div>
+  <div class="stat"><div class="stat-label">Bajadas</div><div class="stat-value" id="st-baj">—</div></div>
+  <div class="stat"><div class="stat-label">Cierres</div><div class="stat-value" id="st-cie">—</div></div>
+</div>
+
+<div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:50px">Zona</th>
+        <th style="width:65px">Centro</th>
+        <th style="width:140px">Denominación</th>
+        <th style="width:100px">Población</th>
+        <th style="width:90px">Provincia</th>
+        <th style="width:155px">Escenario</th>
+        <th style="width:170px">CPs que servimos</th>
+        <th style="width:140px" class="editable-col">Tiendas que dejan TC ✎</th>
+        <th style="width:90px" class="editable-col">Fecha formación ✎</th>
+        <th style="width:80px">Cierre servicio</th>
+        <th style="width:80px">1er servicio</th>
+      </tr>
+    </thead>
+    <tbody id="tbody">
+      <tr><td colspan="11" style="text-align:center;padding:3rem;color:#888">Cargando...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="info-bar">
+  <span id="count-label"></span>
+  <span>Columnas azules editables · Fondo verde = dato del QCC · Amarillo = coincidencia CP · Los edits se sincronizan en Drive para todos</span>
+</div>
+
+<div class="drop-overlay" id="dropOverlay">
+  <div class="drop-box">
+    <h2>Actualizar CSV</h2>
+    <p>Sube el nuevo CSV exportado desde Metabase. Tus edits guardados en Drive se conservarán.</p>
+    <div class="drop-area" id="dropArea" onclick="document.getElementById('fileInput').click()">
+      <input type="file" id="fileInput" accept=".csv">
+      <strong>Arrastra el CSV aquí</strong>
+      <p style="margin-top:6px">o haz clic para seleccionar</p>
+    </div>
+    <button class="btn" onclick="hideDropOverlay()">Cancelar</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+const JSONBIN_KEY = '$2a$10$ZefKKCnShGfeqJ64RNbLvenbqRngR8KVQBmGkPmaZ6oYqrkNf/XeS';
+const JSONBIN_BIN = '69e78902aaba882197218832';
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN}`;
+
+const QCC_DATA = {"3924":{"tc":"C-3971 Cós de Gràcia (Maó, Illes Balears)","formacion":"13/1/2026"},"4271":{"tc":"C-2066 C/ Lagunilla (Andújar, Jaén)","formacion":"10/2/2026"},"4678":{"tc":"C-2095 Ubrique (Ubrique, Cádiz)","formacion":"10/2/2026"},"4353":{"tc":"C-4589 Peñarroya (Peñarroya-Pueblonuevo, Córdoba)","formacion":"18/2/2026"},"2946":{"tc":"C-4595 Avda. Montearenas (Ponferrada, León)\nC-2281 Bembibre (Bembibre, León)","formacion":"10/3/2026"},"4778":{"tc":"C-3979 Bº El Callejo (Laredo, Cantabria)","formacion":"10/3/2026"},"3669":{"tc":"C-3910 Avda. de Oviedo (Torrelavega, Cantabria)","formacion":"11/3/2026"},"3758":{"tc":"C-4395 Villaviciosa (Villaviciosa, Asturias)\nC-3282 Pola de Siero (Pola de Siero, Asturias)\nC-3799 Arriondas (Parres, Asturias)\nC-2363 La Pomar (Langreo, Asturias)","formacion":"12/3/2026"},"4509":{"tc":"C-3812 Jaca (Jaca, Huesca)","formacion":"17/3/2026"},"3632":{"tc":"C-4355 Calatayud (Calatayud, Zaragoza)","formacion":"19/3/2026"},"4569":{"tc":"C-4096 Binéfar (Binéfar, Huesca)\nC-4707 Fraga (Fraga, Huesca)","formacion":"24/3/2026"},"4088":{"tc":"C-4096 Binéfar (Binéfar, Huesca)\nC-4707 Fraga (Fraga, Huesca)","formacion":"24/3/2026"},"4526":{"tc":"C-4121 Solsona (Solsona, Lleida)\nC-4117 (Cervera, Lleida)\nC-3960 (Balaguer, Lleida)","formacion":"31/3/2026"},"4708":{"tc":"","formacion":"25/3/2026"},"4242":{"tc":"C-4767 Cala D'or (Santanyí, Illes Balears)\nC-3461 Llucmajor (Llucmajor, Illes Balears)","formacion":"7/4/2026"},"4582":{"tc":"C-3258 Coll D'en Rabassa (Palma, Illes Balears)\nC-2373 La Ribera (Palma, Illes Balears)\nC-2158 Avda. América (Palma, Illes Balears)\nC-3245 Arenal Park (Llucmajor, Illes Balears)","formacion":"9/4/2026"},"4033":{"tc":"","formacion":"21/4/2026"},"4781":{"tc":"C-2704 C/ Pollentia (Alcúdia, Illes Balears)\nC-2674 Can Picafort (Santa Margalida, Illes Balears)\nC-2152 Avda. General Luque (Inca, Illes Balears)\nC-4781 San Pobla (Sa Pobla, Illes Balears)","formacion":"8/4/2026"},"4232":{"tc":"C-4301 Cas Capità (Santa Eulària des Riu, Illes Balears)\nC-3984 Can Burgos (Sant Josep de sa Talaia, Illes Balears)","formacion":"9/4/2026"},"4443":{"tc":"","formacion":"12/5/2026"},"3860":{"tc":"","formacion":"12/5/2026"},"4766":{"tc":"","formacion":"12/5/2026"},"3975":{"tc":"","formacion":"19/5/2026"},"3950":{"tc":"","formacion":"19/5/2026"},"2343":{"tc":"","formacion":"26/5/2026"},"4777":{"tc":"","formacion":"26/5/2026"},"4771":{"tc":"","formacion":"26/5/2026"},"4705":{"tc":"","formacion":"19/5/2026"},"3700":{"tc":"","formacion":"2/6/2026"},"3734":{"tc":"","formacion":"2/6/2026"},"3905":{"tc":"","formacion":"2/6/2026"},"4311":{"tc":"","formacion":"2/6/2026"},"4237":{"tc":"","formacion":"26/5/2026"},"2875":{"tc":"","formacion":"8/6/2026"},"4385":{"tc":"","formacion":"8/6/2026"},"4425":{"tc":"","formacion":"8/6/2026"},"4558":{"tc":"","formacion":"8/6/2026"},"4472":{"tc":"","formacion":"15/6/2026"},"3725":{"tc":"","formacion":"15/6/2026"},"4113":{"tc":"","formacion":"15/6/2026"},"2465":{"tc":"","formacion":"15/6/2026"},"2762":{"tc":"","formacion":"15/6/2026"},"3889":{"tc":"C-3897 Cala Ratjada\nC-2603 Ramon Llull\nC-3298 Paseo Estacin","formacion":"16/6/2026"},"4655":{"tc":"","formacion":"29/6/2026"},"4429":{"tc":"","formacion":"29/6/2026"},"3563":{"tc":"","formacion":"29/6/2026"},"3968":{"tc":"C-4584 Huétor Tájar (Huétor Tájar, Granada)","formacion":"10/2/2026"},"4744":{"tc":"","formacion":"8/1/2026"},"2528":{"tc":"","formacion":"13/1/2026"},"3664":{"tc":"","formacion":"13/1/2026"},"4687":{"tc":"","formacion":"13/1/2026"},"3410":{"tc":"","formacion":"8/1/2026"},"4483":{"tc":"","formacion":"20/1/2026"},"4556":{"tc":"","formacion":"20/1/2026"},"4402":{"tc":"","formacion":"20/1/2026"},"3992":{"tc":"","formacion":"20/1/2026"},"2717":{"tc":"","formacion":"27/1/2026"},"4436":{"tc":"","formacion":"27/1/2026"},"4745":{"tc":"","formacion":"22/1/2026"},"4701":{"tc":"","formacion":"3/2/2026"},"4410":{"tc":"","formacion":"3/2/2026"},"4623":{"tc":"","formacion":"3/2/2026"},"4632":{"tc":"","formacion":"3/2/2026"},"2129":{"tc":"","formacion":"3/2/2026"},"4154":{"tc":"","formacion":"3/2/2026"},"2623":{"tc":"","formacion":"10/2/2026"},"4028":{"tc":"","formacion":"10/2/2026"},"3571":{"tc":"","formacion":"11/2/2026"},"4544":{"tc":"","formacion":"17/2/2026"},"3769":{"tc":"","formacion":"17/2/2026"},"3943":{"tc":"","formacion":"17/2/2026"},"3087":{"tc":"","formacion":"24/2/2026"},"3850":{"tc":"","formacion":"24/2/2026"},"4804":{"tc":"","formacion":"24/2/2026"},"4294":{"tc":"","formacion":"24/2/2026"},"4030":{"tc":"","formacion":"3/3/2026"},"3697":{"tc":"","formacion":"3/3/2026"},"4471":{"tc":"","formacion":"3/3/2026"},"4631":{"tc":"","formacion":"3/3/2026"},"3836":{"tc":"","formacion":"10/3/2026"},"3280":{"tc":"","formacion":"10/3/2026"},"4434":{"tc":"","formacion":"10/3/2026"},"4562":{"tc":"","formacion":"10/3/2026"},"3945":{"tc":"","formacion":"12/3/2026"},"4587":{"tc":"","formacion":"24/3/2026"},"4606":{"tc":"","formacion":"24/3/2026"},"3930":{"tc":"","formacion":"7/4/2026"},"4338":{"tc":"","formacion":"31/3/2026"},"4519":{"tc":"","formacion":"8/4/2026"},"4137":{"tc":"","formacion":"7/4/2026"},"4253":{"tc":"","formacion":"30/4/2026"},"3775":{"tc":"","formacion":"28/4/2026"}};
+
+let allRows = [];
+let editableData = {};
+let searchCP = '';
+let saveTimeout = null;
+
+function rowKey(r) { return (r[1]||'') + '_' + ((r[9]||'') || (r[10]||'')); }
+
+function setSyncStatus(state, msg) {
+  const el = document.getElementById('syncStatus');
+  el.className = 'sync-status sync-' + state;
+  el.textContent = msg;
+}
+
+async function loadEditsFromDrive() {
+  setSyncStatus('loading', 'Cargando edits...');
+  try {
+    const res = await fetch(JSONBIN_URL + '/latest', {
+      headers: { 'X-Master-Key': JSONBIN_KEY }
+    });
+    const json = await res.json();
+    const data = json.record || {};
+    editableData = data._init ? {} : data;
+    setSyncStatus('ok', 'Sincronizado con JSONBin');
+    return true;
+  } catch(e) {
+    setSyncStatus('err', 'Sin conexión — edits solo locales');
+    try { editableData = JSON.parse(localStorage.getItem('qcc_edits_2026') || '{}'); } catch(e2) {}
+    return false;
+  }
+}
+
+async function saveEditsToDrive() {
+  setSyncStatus('loading', 'Guardando...');
+  localStorage.setItem('qcc_edits_2026', JSON.stringify(editableData));
+  try {
+    const res = await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': JSONBIN_KEY
+      },
+      body: JSON.stringify(editableData)
+    });
+    const json = await res.json();
+    if (json.record) {
+      setSyncStatus('ok', 'Guardado ✓');
+      const b = document.getElementById('saved-badge');
+      b.style.display = 'inline-block';
+      clearTimeout(b._t);
+      b._t = setTimeout(() => b.style.display = 'none', 2000);
+    } else throw new Error('Error JSONBin');
+  } catch(e) {
+    setSyncStatus('err', 'Error al guardar — solo local');
+  }
+}
+
+function scheduleSave() {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(saveEditsToDrive, 1500);
+}
+
+function parseDate(s) {
+  if (!s) return null;
+  const p = s.split('/');
+  if (p.length === 3) return new Date(+p[2], +p[1]-1, +p[0]);
+  return null;
+}
+
+function getMonth(row) {
+  const d = parseDate(row[9]) || parseDate(row[10]);
+  return d ? d.getMonth() + 1 : null;
+}
+
+function badgeClass(e) {
+  if (!e) return 'b-red';
+  if (e.startsWith('Ampliación')) return 'b-green';
+  if (e.startsWith('Bajada')) return 'b-amber';
+  if (e.startsWith('Apertura')) return 'b-teal';
+  if (e.match(/^NTC/)) return 'b-blue';
+  return 'b-gray';
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const cols = []; let cur = '', inQ = false;
+    for (let c = 0; c < line.length; c++) {
+      if (line[c] === '"') { inQ = !inQ; }
+      else if (line[c] === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+      else cur += line[c];
+    }
+    cols.push(cur.trim());
+    while (cols.length < 11) cols.push('');
+    rows.push(cols);
+  }
+  return rows;
+}
+
+function mergeEdits(rows) {
+  rows.forEach(r => {
+    const key = rowKey(r);
+    const centro = r[1] || '';
+    const qcc = QCC_DATA[centro] || {};
+    if (!editableData[key]) editableData[key] = { tc:'', formacion:'', src:{} };
+    if (!editableData[key].src) editableData[key].src = {};
+    if (qcc.tc && !editableData[key].tc) { editableData[key].tc = qcc.tc; editableData[key].src.tc = 'qcc'; }
+    if (qcc.formacion && !editableData[key].formacion) { editableData[key].formacion = qcc.formacion; editableData[key].src.formacion = 'qcc'; }
+    if ((r[7]||'') && !editableData[key].tc) { editableData[key].tc = r[7]; editableData[key].src.tc = 'csv'; }
+    if ((r[8]||'') && !editableData[key].formacion) { editableData[key].formacion = r[8]; editableData[key].src.formacion = 'csv'; }
+  });
+}
+
+function showNotice(msg, type) {
+  const el = document.getElementById('noticeArea');
+  el.innerHTML = `<div class="notice notice-${type}">${msg}</div>`;
+  setTimeout(() => el.innerHTML = '', 5000);
+}
+
+function populateFilters() {
+  const tipos = [...new Set(allRows.map(r => r[5]).filter(Boolean))].sort();
+  const zonas = [...new Set(allRows.map(r => r[0]).filter(Boolean))].sort();
+  document.getElementById('sel-tipo').innerHTML = '<option value="">Todos los escenarios</option>' + tipos.map(t => `<option value="${t}">${t}</option>`).join('');
+  document.getElementById('sel-zona').innerHTML = '<option value="">Todas las zonas</option>' + zonas.map(z => `<option value="${z}">${z}</option>`).join('');
+}
+
+function highlightCP(text, cp) {
+  if (!cp || !text) return text || '';
+  return text.replace(new RegExp(`(${cp.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'), '<span class="cp-highlight">$1</span>');
+}
+
+function render() {
+  const mes = document.getElementById('sel-mes').value;
+  const tipo = document.getElementById('sel-tipo').value;
+  const zona = document.getElementById('sel-zona').value;
+  const q = document.getElementById('buscar').value.toLowerCase();
+  searchCP = document.getElementById('buscar-cp').value.trim();
+
+  let rows = allRows.filter(r => {
+    if (mes && getMonth(r) != mes) return false;
+    if (tipo && r[5] !== tipo) return false;
+    if (zona && r[0] !== zona) return false;
+    if (q && ![r[0],r[1],r[2],r[3],r[4],r[5]].join(' ').toLowerCase().includes(q)) return false;
+    if (searchCP && !(r[6]||'').includes(searchCP)) return false;
+    return true;
+  });
+
+  let altas=0,amp=0,baj=0,cie=0;
+  rows.forEach(r => { const e=r[5]||''; if(!e) cie++; else if(e.startsWith('Ampliación')) amp++; else if(e.startsWith('Bajada')) baj++; else altas++; });
+  document.getElementById('st-total').textContent = rows.length;
+  document.getElementById('st-altas').textContent = altas;
+  document.getElementById('st-amp').textContent = amp;
+  document.getElementById('st-baj').textContent = baj;
+  document.getElementById('st-cie').textContent = cie;
+  document.getElementById('count-label').textContent = rows.length + ' de ' + allRows.length + ' registros' + (searchCP ? ` · CP "${searchCP}"` : '');
+
+  const tbody = document.getElementById('tbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:2rem;color:#888">No hay resultados</td></tr>'; return; }
+
+  tbody.innerHTML = rows.map(r => {
+    const key = rowKey(r);
+    const ed = editableData[key] || {};
+    const tc = ed.tc || '', form = ed.formacion || '';
+    const tcFromQCC = ed.src?.tc === 'qcc', formFromQCC = ed.src?.formacion === 'qcc';
+    const esc = r[5] || '';
+    const badge = esc ? `<span class="badge ${badgeClass(esc)}">${esc}</span>` : '<span style="color:#bbb;font-style:italic;font-size:11px">cierre</span>';
+    const cpsDisplay = searchCP ? highlightCP(r[6]||'', searchCP) : (r[6]||'');
+    const cpMatch = searchCP && (r[6]||'').includes(searchCP);
+    return `<tr${cpMatch?' class="cp-match"':''}>
+      <td>${r[0]||''}</td><td><strong>${r[1]||''}</strong></td><td>${r[2]||''}</td>
+      <td>${r[3]||''}</td><td>${r[4]||''}</td><td>${badge}</td>
+      <td class="cps-cell">${cpsDisplay}</td>
+      <td><span class="editable-cell${tc?'':' empty-cell'}${tcFromQCC?' from-qcc':''}" contenteditable="true" data-key="${key}" data-field="tc" onblur="saveCell(this)" onfocus="clearHint(this)">${tc||'Haz clic para editar'}</span></td>
+      <td><span class="editable-cell${form?'':' empty-cell'}${formFromQCC?' from-qcc':''}" contenteditable="true" data-key="${key}" data-field="formacion" onblur="saveCell(this)" onfocus="clearHint(this)">${form||'Haz clic para editar'}</span></td>
+      <td style="color:${r[9]?'#791F1F':'inherit'}">${r[9]||''}</td>
+      <td style="color:${r[10]?'#27500A':'inherit'}">${r[10]||''}</td>
+    </tr>`;
+  }).join('');
+}
+
+function clearHint(el) { if(el.classList.contains('empty-cell')){ el.textContent=''; el.classList.remove('empty-cell'); } }
+
+function saveCell(el) {
+  const key = el.dataset.key, field = el.dataset.field, val = el.textContent.trim();
+  if (!editableData[key]) editableData[key] = {tc:'',formacion:'',src:{}};
+  if (!editableData[key].src) editableData[key].src = {};
+  editableData[key][field] = val;
+  editableData[key].src[field] = 'manual';
+  el.classList.remove('from-qcc');
+  if (!val) { el.textContent='Haz clic para editar'; el.classList.add('empty-cell'); } else el.classList.remove('empty-cell');
+  scheduleSave();
+}
+
+function initWithCSV(rawText) {
+  allRows = parseCSV(rawText);
+  mergeEdits(allRows);
+  populateFilters();
+  render();
+  const date = localStorage.getItem('qcc_csv_date_2026') || '';
+  document.getElementById('csvStatus').innerHTML = `<strong>${allRows.length} registros</strong>${date ? ' · CSV cargado el ' + date : ''}`;
+}
+
+function saveCSVToStorage(rawText) {
+  try {
+    localStorage.setItem('qcc_csv_2026', rawText);
+    localStorage.setItem('qcc_csv_date_2026', new Date().toLocaleString('es-ES'));
+  } catch(e) { showNotice('CSV demasiado grande para guardarlo localmente. Tendrás que cargarlo cada vez.', 'blue'); }
+}
+
+function handleFile(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = async ev => {
+    const text = ev.target.result;
+    saveCSVToStorage(text);
+    initWithCSV(text);
+    hideDropOverlay();
+    showNotice('CSV actualizado correctamente.', 'green');
+  };
+  r.readAsText(file, 'UTF-8');
+}
+
+function exportCSV() {
+  if (!allRows.length) return alert('No hay datos cargados');
+  const header = ['zona_tiendas','num_centro','denominacion','poblacion','provincia','escenario','cps_que_servimos','tiendas_que_dejan_de_servir_tc','fecha_1er_dia_formacion','fecha_cierre_servicio','fecha_1er_servicio'];
+  const rows = allRows.map(r => { const key=rowKey(r),out=[...r]; out[7]=editableData[key]?.tc||''; out[8]=editableData[key]?.formacion||''; return out.map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(','); });
+  const blob = new Blob([header.join(',')+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='QCC_expansion_online_2026.csv'; a.click();
+}
+
+function exportXLSX() {
+  if (!allRows.length) return alert('No hay datos cargados');
+  const header = ['Zona','Centro','Denominación','Población','Provincia','Escenario','CPs que servimos','Tiendas que dejan TC','Fecha formación','Cierre servicio','1er servicio'];
+  const wsData = [header,...allRows.map(r=>{ const key=rowKey(r),out=[...r]; out[7]=editableData[key]?.tc||''; out[8]=editableData[key]?.formacion||''; return out; })];
+  const ws=XLSX.utils.aoa_to_sheet(wsData);
+  ws['!cols']=[7,8,20,15,14,22,25,20,13,12,12].map(w=>({wch:w}));
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'QCC 2026');
+  XLSX.writeFile(wb,'QCC_expansion_online_2026.xlsx');
+}
+
+function showDropOverlay() { document.getElementById('dropOverlay').classList.add('show'); }
+function hideDropOverlay() { document.getElementById('dropOverlay').classList.remove('show'); }
+
+const dropArea = document.getElementById('dropArea');
+const fileInput = document.getElementById('fileInput');
+dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('active'); });
+dropArea.addEventListener('dragleave', () => dropArea.classList.remove('active'));
+dropArea.addEventListener('drop', e => { e.preventDefault(); dropArea.classList.remove('active'); handleFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+document.getElementById('dropOverlay').addEventListener('click', e => { if(e.target===document.getElementById('dropOverlay')) hideDropOverlay(); });
+['sel-mes','sel-tipo','sel-zona'].forEach(id => document.getElementById(id).addEventListener('change', render));
+document.getElementById('buscar').addEventListener('input', render);
+document.getElementById('buscar-cp').addEventListener('input', render);
+
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadEditsFromDrive();
+  const raw = localStorage.getItem('qcc_csv_2026');
+  if (raw) {
+    initWithCSV(raw);
+  } else {
+    document.getElementById('csvStatus').textContent = 'Sin datos — sube el CSV de Metabase para empezar';
+    document.getElementById('tbody').innerHTML = '<tr><td colspan="11" style="text-align:center;padding:3rem;color:#888">Haz clic en "Actualizar CSV" para cargar los datos</td></tr>';
+    showDropOverlay();
+  }
+});
+</script>
+</body>
+</html>
