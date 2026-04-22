@@ -290,12 +290,17 @@ function mergeEdits(rows) {
     const key = rowKey(r);
     const centro = r[1] || '';
     const qcc = QCC_DATA[centro] || {};
+    const existeEnJsonBin = editableData.hasOwnProperty(key);
     if (!editableData[key]) editableData[key] = { tc:'', formacion:'', src:{} };
     if (!editableData[key].src) editableData[key].src = {};
-    if (qcc.tc && !editableData[key].tc) { editableData[key].tc = qcc.tc; editableData[key].src.tc = 'qcc'; }
-    if (qcc.formacion && !editableData[key].formacion) { editableData[key].formacion = qcc.formacion; editableData[key].src.formacion = 'qcc'; }
-    if ((r[7]||'') && !editableData[key].tc) { editableData[key].tc = r[7]; editableData[key].src.tc = 'csv'; }
-    if ((r[8]||'') && !editableData[key].formacion) { editableData[key].formacion = r[8]; editableData[key].src.formacion = 'csv'; }
+    // Solo rellenar con QCC/CSV si la key NO vino de JSONBin (nunca fue editada)
+    // Si vino de JSONBin, respetar el valor aunque esté vacío (el usuario lo borró)
+    if (!existeEnJsonBin) {
+      if (qcc.tc) { editableData[key].tc = qcc.tc; editableData[key].src.tc = 'qcc'; }
+      if (qcc.formacion) { editableData[key].formacion = qcc.formacion; editableData[key].src.formacion = 'qcc'; }
+      if ((r[7]||'') && !editableData[key].tc) { editableData[key].tc = r[7]; editableData[key].src.tc = 'csv'; }
+      if ((r[8]||'') && !editableData[key].formacion) { editableData[key].formacion = r[8]; editableData[key].src.formacion = 'csv'; }
+    }
   });
 }
 
