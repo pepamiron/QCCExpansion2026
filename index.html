@@ -311,10 +311,54 @@ function showNotice(msg, type) {
 }
 
 function populateFilters() {
+  // Poblado inicial con todos los valores
   const tipos = [...new Set(allRows.map(r => r[5]).filter(Boolean))].sort();
   const zonas = [...new Set(allRows.map(r => r[0]).filter(Boolean))].sort();
   document.getElementById('sel-tipo').innerHTML = '<option value="">Todos los escenarios</option>' + tipos.map(t => `<option value="${t}">${t}</option>`).join('');
   document.getElementById('sel-zona').innerHTML = '<option value="">Todas las zonas</option>' + zonas.map(z => `<option value="${z}">${z}</option>`).join('');
+}
+
+function updateCascadeFilters(changedId) {
+  const mes = document.getElementById('sel-mes').value;
+  const tipo = document.getElementById('sel-tipo').value;
+  const zona = document.getElementById('sel-zona').value;
+  const q = document.getElementById('buscar').value.toLowerCase();
+
+  // Filtrar ignorando el filtro que acaba de cambiar para recalcular sus opciones
+  function filteredExcluding(excludeId) {
+    return allRows.filter(r => {
+      if (excludeId !== 'sel-mes' && mes && getMonth(r) != mes) return false;
+      if (excludeId !== 'sel-tipo' && tipo && r[5] !== tipo) return false;
+      if (excludeId !== 'sel-zona' && zona && r[0] !== zona) return false;
+      if (q && ![r[0],r[1],r[2],r[3],r[4],r[5]].join(' ').toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }
+
+  // Recalcular zonas según mes y escenario seleccionados
+  if (changedId !== 'sel-zona') {
+    const zonaRows = filteredExcluding('sel-zona');
+    const zonas = [...new Set(zonaRows.map(r => r[0]).filter(Boolean))].sort();
+    const zonaActual = zona;
+    document.getElementById('sel-zona').innerHTML = '<option value="">Todas las zonas</option>' + zonas.map(z => `<option value="${z}"${z===zonaActual?' selected':''}>${z}</option>`).join('');
+  }
+
+  // Recalcular escenarios según mes y zona seleccionados
+  if (changedId !== 'sel-tipo') {
+    const tipoRows = filteredExcluding('sel-tipo');
+    const tipos = [...new Set(tipoRows.map(r => r[5]).filter(Boolean))].sort();
+    const tipoActual = tipo;
+    document.getElementById('sel-tipo').innerHTML = '<option value="">Todos los escenarios</option>' + tipos.map(t => `<option value="${t}"${t===tipoActual?' selected':''}>${t}</option>`).join('');
+  }
+
+  // Recalcular meses según zona y escenario seleccionados
+  if (changedId !== 'sel-mes') {
+    const mesRows = filteredExcluding('sel-mes');
+    const meses = [...new Set(mesRows.map(r => getMonth(r)).filter(Boolean))].sort((a,b)=>a-b);
+    const mesNombres = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const mesActual = mes;
+    document.getElementById('sel-mes').innerHTML = '<option value="">Todos los meses</option>' + meses.map(m => `<option value="${m}"${String(m)===mesActual?' selected':''}>${mesNombres[m]}</option>`).join('');
+  }
 }
 
 function highlightCP(text, cp) {
@@ -517,7 +561,12 @@ dropArea.addEventListener('dragleave', () => dropArea.classList.remove('active')
 dropArea.addEventListener('drop', e => { e.preventDefault(); dropArea.classList.remove('active'); handleFile(e.dataTransfer.files[0]); });
 fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
 document.getElementById('dropOverlay').addEventListener('click', e => { if(e.target===document.getElementById('dropOverlay')) hideDropOverlay(); });
-['sel-mes','sel-tipo','sel-zona'].forEach(id => document.getElementById(id).addEventListener('change', render));
+['sel-mes','sel-tipo','sel-zona'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => {
+    updateCascadeFilters(id);
+    render();
+  });
+});
 document.getElementById('buscar').addEventListener('input', render);
 document.getElementById('buscar-cp').addEventListener('input', render);
 
