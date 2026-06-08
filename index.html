@@ -46,15 +46,9 @@ th{background:#f1efe8;color:#5f5e5a;font-weight:600;font-size:11px;padding:7px 8
 th.editable-col{color:#185FA5}
 td{padding:5px 8px;border-bottom:1px solid #efefeb;vertical-align:top;color:#1a1a18}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:#faf9f7}
-tr.cp-match td{background:#fffbe6}
+
 .badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:5px;font-weight:500;white-space:nowrap}
-.b-green{background:#EAF3DE;color:#27500A}
-.b-red{background:#FCEBEB;color:#791F1F}
-.b-blue{background:#E6F1FB;color:#0C447C}
-.b-amber{background:#FAEEDA;color:#633806}
-.b-gray{background:#F1EFE8;color:#444441}
-.b-teal{background:#E1F5EE;color:#085041}
+.b-green,.b-red,.b-blue,.b-amber,.b-gray,.b-teal{background:transparent;color:#1a1a18}
 .editable-cell{cursor:pointer;min-height:18px;border-radius:4px;padding:2px 4px;display:block;white-space:pre-wrap}
 .editable-cell:hover{background:#e8e8e4}
 .editable-cell:focus{outline:2px solid #378ADD;background:#fff;border-radius:4px}
@@ -72,6 +66,18 @@ tr.cp-match td{background:#fffbe6}
 th.sort-asc::after{content:' ↑';color:#378ADD}
 th.sort-desc::after{content:' ↓';color:#378ADD}
 th.no-sort{cursor:default}
+
+/* ── COLORES DE FILA POR TIPO DE ESCENARIO ── */
+tr.row-amp td{background:#d9ead3}
+tr.row-amp:hover td{background:#c6e0b4}
+tr.row-cierre td{background:#f4cccc}
+tr.row-cierre:hover td{background:#ea9999}
+tr.row-baja td{background:#fce5cd}
+tr.row-baja:hover td{background:#f9cb9c}
+tr.row-alta td{background:#ffffff}
+tr.row-alta:hover td{background:#faf9f7}
+/* cp-match tiene prioridad sobre el color de fila */
+tr.cp-match td{background:#fffbe6!important}
 </style>
 </head>
 <body>
@@ -154,24 +160,7 @@ th.no-sort{cursor:default}
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js">
-// Ordenar columnas al hacer clic en cabecera
-document.querySelectorAll('th[data-col]').forEach(th => {
-  th.addEventListener('click', () => {
-    const col = parseInt(th.dataset.col);
-    if (sortCol === col) {
-      sortDir *= -1;
-    } else {
-      sortCol = col;
-      sortDir = 1;
-    }
-    // Actualizar clases visual
-    document.querySelectorAll('th').forEach(t => t.classList.remove('sort-asc','sort-desc'));
-    th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
-    render();
-  });
-});
-</script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <script>
 const JSONBIN_KEY = '$2a$10$ZefKKCnShGfeqJ64RNbLvenbqRngR8KVQBmGkPmaZ6oYqrkNf/XeS';
 const JSONBIN_EDITS_BIN = '69e78902aaba882197218832';
@@ -187,7 +176,7 @@ let editableData = {};
 let searchCP = '';
 let saveTimeout = null;
 let sortCol = null;
-let sortDir = 1; // 1 asc, -1 desc
+let sortDir = 1;
 
 function rowKey(r) { return (r[1]||'') + '_' + ((r[9]||'') || (r[10]||'')); }
 
@@ -293,8 +282,6 @@ function mergeEdits(rows) {
     const existeEnJsonBin = editableData.hasOwnProperty(key);
     if (!editableData[key]) editableData[key] = { tc:'', formacion:'', src:{} };
     if (!editableData[key].src) editableData[key].src = {};
-    // Solo rellenar con QCC/CSV si la key NO vino de JSONBin (nunca fue editada)
-    // Si vino de JSONBin, respetar el valor aunque esté vacío (el usuario lo borró)
     if (!existeEnJsonBin) {
       if (qcc.tc) { editableData[key].tc = qcc.tc; editableData[key].src.tc = 'qcc'; }
       if (qcc.formacion) { editableData[key].formacion = qcc.formacion; editableData[key].src.formacion = 'qcc'; }
@@ -311,7 +298,6 @@ function showNotice(msg, type) {
 }
 
 function populateFilters() {
-  // Poblado inicial con todos los valores
   const tipos = [...new Set(allRows.map(r => r[5]).filter(Boolean))].sort();
   const zonas = [...new Set(allRows.map(r => r[0]).filter(Boolean))].sort();
   document.getElementById('sel-tipo').innerHTML = '<option value="">Todos los escenarios</option>' + tipos.map(t => `<option value="${t}">${t}</option>`).join('');
@@ -324,7 +310,6 @@ function updateCascadeFilters(changedId) {
   const zona = document.getElementById('sel-zona').value;
   const q = document.getElementById('buscar').value.toLowerCase();
 
-  // Filtrar ignorando el filtro que acaba de cambiar para recalcular sus opciones
   function filteredExcluding(excludeId) {
     return allRows.filter(r => {
       if (excludeId !== 'sel-mes' && mes && getMonth(r) != mes) return false;
@@ -335,7 +320,6 @@ function updateCascadeFilters(changedId) {
     });
   }
 
-  // Recalcular zonas según mes y escenario seleccionados
   if (changedId !== 'sel-zona') {
     const zonaRows = filteredExcluding('sel-zona');
     const zonas = [...new Set(zonaRows.map(r => r[0]).filter(Boolean))].sort();
@@ -343,7 +327,6 @@ function updateCascadeFilters(changedId) {
     document.getElementById('sel-zona').innerHTML = '<option value="">Todas las zonas</option>' + zonas.map(z => `<option value="${z}"${z===zonaActual?' selected':''}>${z}</option>`).join('');
   }
 
-  // Recalcular escenarios según mes y zona seleccionados
   if (changedId !== 'sel-tipo') {
     const tipoRows = filteredExcluding('sel-tipo');
     const tipos = [...new Set(tipoRows.map(r => r[5]).filter(Boolean))].sort();
@@ -351,7 +334,6 @@ function updateCascadeFilters(changedId) {
     document.getElementById('sel-tipo').innerHTML = '<option value="">Todos los escenarios</option>' + tipos.map(t => `<option value="${t}"${t===tipoActual?' selected':''}>${t}</option>`).join('');
   }
 
-  // Recalcular meses según zona y escenario seleccionados
   if (changedId !== 'sel-mes') {
     const mesRows = filteredExcluding('sel-mes');
     const meses = [...new Set(mesRows.map(r => getMonth(r)).filter(Boolean))].sort((a,b)=>a-b);
@@ -373,13 +355,11 @@ function render() {
   const q = document.getElementById('buscar').value.toLowerCase();
   searchCP = document.getElementById('buscar-cp').value.trim();
 
-  // Ordenar si hay columna activa
   let sortedRows = [...allRows];
   if (sortCol !== null) {
     sortedRows.sort((a, b) => {
       let va, vb;
       const thEl = document.querySelector(`th[data-col="${sortCol}"]`);
-      // Columnas editables
       if (sortCol === 'tc') {
         const ka = rowKey(a), kb = rowKey(b);
         va = editableData[ka]?.tc || '';
@@ -392,11 +372,9 @@ function render() {
         va = a[sortCol] || '';
         vb = b[sortCol] || '';
       }
-      // Ordenar fechas como fechas reales
       if (thEl && thEl.dataset.date) {
         const parseD = s => { if(!s) return 0; const p=s.split('/'); return p.length===3?new Date(+p[2],+p[1]-1,+p[0]).getTime():0; };
         va = parseD(va); vb = parseD(vb);
-        // Vacíos al final
         if (!va && !vb) return 0;
         if (!va) return 1;
         if (!vb) return -1;
@@ -433,17 +411,19 @@ function render() {
     const tc = ed.tc || '', form = ed.formacion || '';
     const tcFromQCC = ed.src?.tc === 'qcc', formFromQCC = ed.src?.formacion === 'qcc';
     const esc = r[5] || '';
-    const badge = esc ? `<span class="badge ${badgeClass(esc)}">${esc}</span>` : '<span style="color:#bbb;font-style:italic;font-size:11px">cierre</span>';
+    const badge = esc ? `<span class="badge ${badgeClass(esc)}">${esc}</span>` : '<span style="color:#1a1a18;font-style:italic;font-size:11px">cierre</span>';
     const cpsDisplay = searchCP ? highlightCP(r[6]||'', searchCP) : (r[6]||'');
     const cpMatch = searchCP && (r[6]||'').includes(searchCP);
-    return `<tr${cpMatch?' class="cp-match"':''}>
+    // ── ÚNICO CAMBIO EN JS: clase de fila según escenario ──
+    const rowClass = cpMatch ? 'cp-match' : (!esc ? 'row-cierre' : esc.startsWith('Ampliación') ? 'row-amp' : esc.startsWith('Bajada') ? 'row-baja' : 'row-alta');
+    return `<tr class="${rowClass}">
       <td>${r[0]||''}</td><td><strong>${r[1]||''}</strong></td><td>${r[2]||''}</td>
       <td>${r[3]||''}</td><td>${r[4]||''}</td><td>${badge}</td>
       <td class="cps-cell">${cpsDisplay}</td>
       <td><span class="editable-cell${tc?'':' empty-cell'}${tcFromQCC?' from-qcc':''}" contenteditable="true" data-key="${key}" data-field="tc" onblur="saveCell(this)" onfocus="clearHint(this)">${tc||'Haz clic para editar'}</span></td>
       <td><span class="editable-cell${form?'':' empty-cell'}${formFromQCC?' from-qcc':''}" contenteditable="true" data-key="${key}" data-field="formacion" onblur="saveCell(this)" onfocus="clearHint(this)">${form||'Haz clic para editar'}</span></td>
-      <td style="color:${r[9]?'#791F1F':'inherit'}">${r[9]||''}</td>
-      <td style="color:${r[10]?'#27500A':'inherit'}">${r[10]||''}</td>
+      <td>${r[9]||''}</td>
+      <td>${r[10]||''}</td>
     </tr>`;
   }).join('');
 }
@@ -481,7 +461,6 @@ async function uploadDatosToJsonBin(rows) {
   setSyncStatus('loading', 'Subiendo datos...');
   try {
     if (datosBinId) {
-      // Actualizar bin existente
       const res = await fetch(`https://api.jsonbin.io/v3/b/${datosBinId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
@@ -490,7 +469,6 @@ async function uploadDatosToJsonBin(rows) {
       const json = await res.json();
       if (!json.record) throw new Error('Error al actualizar');
     } else {
-      // Crear nuevo bin
       const res = await fetch('https://api.jsonbin.io/v3/b', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Name': 'QCC Datos 2026' },
@@ -543,12 +521,90 @@ function exportCSV() {
 
 function exportXLSX() {
   if (!allRows.length) return alert('No hay datos cargados');
+
+  // Colores de fila (ARGB: FF + hex sin #)
+  const FILL = {
+    amp:    'FFD9EAD3',
+    cierre: 'FFF4CCCC',
+    baja:   'FFFCE5CD',
+    alta:   'FFFFFFFF'
+  };
+
+  // Recoger solo las filas actualmente visibles (respeta filtros)
+  const mes   = document.getElementById('sel-mes').value;
+  const tipo  = document.getElementById('sel-tipo').value;
+  const zona  = document.getElementById('sel-zona').value;
+  const q     = document.getElementById('buscar').value.toLowerCase();
+  const cp    = document.getElementById('buscar-cp').value.trim();
+
+  const visibleRows = allRows.filter(r => {
+    if (mes  && getMonth(r) != mes)  return false;
+    if (tipo && r[5] !== tipo)       return false;
+    if (zona && r[0] !== zona)       return false;
+    if (q && ![r[0],r[1],r[2],r[3],r[4],r[5]].join(' ').toLowerCase().includes(q)) return false;
+    if (cp && !(r[6]||'').includes(cp)) return false;
+    return true;
+  });
+
   const header = ['Zona','Centro','Denominación','Población','Provincia','Escenario','CPs que servimos','Tiendas que dejan TC','Fecha formación','Cierre servicio','1er servicio'];
-  const wsData = [header,...allRows.map(r=>{ const key=rowKey(r),out=[...r]; out[7]=editableData[key]?.tc||''; out[8]=editableData[key]?.formacion||''; return out; })];
-  const ws=XLSX.utils.aoa_to_sheet(wsData);
-  ws['!cols']=[7,8,20,15,14,22,25,20,13,12,12].map(w=>({wch:w}));
-  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'QCC 2026');
-  XLSX.writeFile(wb,'QCC_expansion_online_2026.xlsx');
+  const dataRows = visibleRows.map(r => {
+    const key = rowKey(r), out = [...r];
+    out[7] = editableData[key]?.tc || '';
+    out[8] = editableData[key]?.formacion || '';
+    return out;
+  });
+
+  const wsData = [header, ...dataRows];
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  ws['!cols'] = [7,8,20,15,14,22,25,20,13,12,12].map(w=>({wch:w}));
+
+  // Aplicar color de fondo a cada fila de datos
+  visibleRows.forEach((r, i) => {
+    const esc = r[5] || '';
+    const fillKey = !esc ? 'cierre' : esc.startsWith('Ampliación') ? 'amp' : esc.startsWith('Bajada') ? 'baja' : 'alta';
+    const fgColor = FILL[fillKey];
+    const rowIdx = i + 1; // fila 0 = header
+    for (let c = 0; c < 11; c++) {
+      const cellRef = XLSX.utils.encode_cell({r: rowIdx, c});
+      if (!ws[cellRef]) ws[cellRef] = {v:'', t:'s'};
+      ws[cellRef].s = {
+        fill: { patternType: 'solid', fgColor: { rgb: fgColor } },
+        font: { name: 'Calibri', sz: 11 },
+        alignment: { wrapText: true, vertical: 'top' }
+      };
+    }
+  });
+
+  // Estilo cabecera: mayúsculas, fondo gris, borde línea continua
+  const borderSolid = { style:'thin', color:{ rgb:'FF999999' } };
+  for (let c = 0; c < 11; c++) {
+    const cellRef = XLSX.utils.encode_cell({r:0, c});
+    if (!ws[cellRef]) ws[cellRef] = {v: header[c], t:'s'};
+    ws[cellRef].v = header[c].toUpperCase();
+    ws[cellRef].s = {
+      fill: { patternType:'solid', fgColor:{ rgb:'FFD9D9D9' } },
+      font: { name:'Calibri', sz:11, bold:true, color:{ rgb:'FF1A1A18' } },
+      alignment: { vertical:'center', wrapText:true },
+      border: { top:borderSolid, bottom:borderSolid, left:borderSolid, right:borderSolid }
+    };
+  }
+
+  // Borde micropunto en todas las celdas de datos
+  const borderDot = { style:'hair', color:{ rgb:'FFCCCCCC' } };
+  visibleRows.forEach((r, i) => {
+    for (let c = 0; c < 11; c++) {
+      const cellRef = XLSX.utils.encode_cell({r: i+1, c});
+      if (!ws[cellRef]) ws[cellRef] = {v:'', t:'s'};
+      ws[cellRef].s = {
+        ...ws[cellRef].s,
+        border: { top:borderDot, bottom:borderDot, left:borderDot, right:borderDot }
+      };
+    }
+  });
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'QCC 2026');
+  XLSX.writeFile(wb, 'QCC_expansion_online_2026.xlsx');
 }
 
 function showDropOverlay() { document.getElementById('dropOverlay').classList.add('show'); }
@@ -583,7 +639,6 @@ async function loadDatosFromBin() {
 
 window.addEventListener('DOMContentLoaded', async () => {
   await loadEditsFromDrive();
-  // Intentar cargar datos de JSONBin si hay bin guardado
   const remoteDatos = await loadDatosFromBin();
   if (remoteDatos) {
     allRows = remoteDatos;
@@ -592,7 +647,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     render();
     document.getElementById('csvStatus').innerHTML = `<strong>${allRows.length} registros</strong> · Datos desde JSONBin`;
   } else {
-    // Usar datos hardcodeados
     allRows = BUILTIN_ROWS;
     mergeEdits(allRows);
     populateFilters();
@@ -601,17 +655,15 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Ordenar columnas al hacer clic en cabecera
 document.querySelectorAll('th[data-col]').forEach(th => {
   th.addEventListener('click', () => {
-    const col = parseInt(th.dataset.col);
+    const col = th.dataset.col === 'tc' ? 'tc' : th.dataset.col === 'fe' ? 'fe' : parseInt(th.dataset.col);
     if (sortCol === col) {
       sortDir *= -1;
     } else {
       sortCol = col;
       sortDir = 1;
     }
-    // Actualizar clases visual
     document.querySelectorAll('th').forEach(t => t.classList.remove('sort-asc','sort-desc'));
     th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
     render();
