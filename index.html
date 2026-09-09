@@ -2,1382 +2,747 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Planning Operativo — Mercadona Online</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QCC Expansión Online 2026</title>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;font-size:13px;background:#f5f5f3;color:#1a1a18;padding:1.2rem;overflow-y:scroll}
+h1{font-size:16px;font-weight:600;margin-bottom:.75rem}
+.top-bar{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.top-bar .csv-status{font-size:12px;color:#5f5e5a;flex:1}
+.top-bar .csv-status strong{color:#1a1a18}
+.btn{padding:5px 12px;border:1px solid #ccc;border-radius:6px;background:#fff;color:#1a1a18;font-size:12px;cursor:pointer;height:32px;white-space:nowrap}
+.btn:hover{background:#f1efe8}
+.btn-primary{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.btn-primary:hover{background:#333}
+.btn-green{background:#27500A;color:#fff;border-color:#27500A}
+.btn-green:hover{background:#3B6D11}
+.btn-warn{background:#FAEEDA;color:#633806;border-color:#EF9F27}
+.btn-warn:hover{background:#FAC775}
+.sync-status{font-size:11px;padding:2px 8px;border-radius:4px;display:inline-block}
+.sync-ok{background:#EAF3DE;color:#27500A}
+.sync-err{background:#FCEBEB;color:#791F1F}
+.sync-loading{background:#E6F1FB;color:#0C447C}
+.drop-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
+.drop-overlay.show{display:flex}
+.drop-box{background:#fff;border-radius:12px;padding:2.5rem 3rem;text-align:center;width:420px;max-width:90vw}
+.drop-box h2{font-size:15px;font-weight:600;margin-bottom:.5rem}
+.drop-box p{font-size:12px;color:#888;margin-bottom:1.5rem}
+.drop-area{border:2px dashed #ccc;border-radius:8px;padding:1.5rem;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:1rem}
+.drop-area:hover,.drop-area.active{border-color:#378ADD;background:#E6F1FB}
+.drop-area input{display:none}
+.drop-area p{color:#888;font-size:12px;margin:0}
+.drop-area strong{color:#1a1a18}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+select,input[type=text]{padding:5px 9px;border:1px solid #ccc;border-radius:6px;font-size:12px;background:#fff;color:#1a1a18;height:32px}
+input[type=text]{min-width:155px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
+.stat{background:#fff;border:1px solid #d3d1c7;border-radius:8px;padding:9px 12px}
+.stat-label{font-size:11px;color:#888;margin-bottom:2px}
+.stat-value{font-size:21px;font-weight:600}
+.tbl-wrap{overflow:auto;border:1px solid #d3d1c7;border-radius:10px;background:#fff;max-height:calc(100vh - 260px)}
+table{width:100%;border-collapse:collapse;min-width:1020px}
+th{background:#f1efe8;color:#5f5e5a;font-weight:600;font-size:11px;padding:7px 8px;text-align:left;border-bottom:1px solid #d3d1c7;white-space:nowrap;position:sticky;top:0;z-index:2;cursor:pointer;user-select:none}
+th.editable-col{color:#185FA5}
+td{padding:5px 8px;border-bottom:1px solid #efefeb;vertical-align:top;color:#1a1a18}
+tr:last-child td{border-bottom:none}
 
-:root {
-  --bg: #f8f8f6;
-  --surface: #ffffff;
-  --surface2: #f2f2f0;
-  --border: rgba(0,0,0,0.1);
-  --border-strong: rgba(0,0,0,0.22);
-  --text: #1a1a18;
-  --text-muted: #6b6b66;
-  --text-faint: #a0a09a;
-  --teal: #1D9E75;
-  --teal-light: #E1F5EE;
-  --teal-border: #9FE1CB;
-  --teal-dark: #0F6E56;
-  --blue: #378ADD;
-  --blue-light: #E6F1FB;
-  --blue-border: #B5D4F4;
-  --blue-dark: #185FA5;
-  --m2-bg: #fffef5; --m2-border: #e8e0a0; --m2-text: #6b5e00;
-  --m1-bg: #f5f8ff; --m1-border: #b5c8f4; --m1-text: #185FA5;
-  --radius: 8px; --radius-lg: 12px;
-  --panel-w: 420px;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1a1a18; --surface: #242422; --surface2: #2e2e2b;
-    --border: rgba(255,255,255,0.1); --border-strong: rgba(255,255,255,0.22);
-    --text: #f0f0ec; --text-muted: #9a9a94; --text-faint: #666660;
-    --teal-light: #04342C; --teal-border: #085041; --teal-dark: #5DCAA5;
-    --blue-light: #042C53; --blue-border: #0C447C; --blue-dark: #85B7EB;
-    --m2-bg: #2a2700; --m2-border: #5a5000; --m2-text: #d4c040;
-    --m1-bg: #001a3a; --m1-border: #0C447C; --m1-text: #85B7EB;
-  }
-}
+.badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:5px;font-weight:500;white-space:nowrap}
+.b-green,.b-red,.b-blue,.b-amber,.b-gray,.b-teal{background:transparent;color:#1a1a18}
+.editable-cell{cursor:pointer;min-height:18px;border-radius:4px;padding:2px 4px;display:block;white-space:pre-wrap}
+.editable-cell:hover{background:#e8e8e4}
+.editable-cell:focus{outline:2px solid #378ADD;background:#fff;border-radius:4px}
+.editable-cell.empty-cell{color:#bbb;font-style:italic;font-size:11px;white-space:normal}
+.editable-cell.from-qcc{}
+.saved-badge{font-size:11px;color:#27500A;background:#EAF3DE;padding:2px 8px;border-radius:4px;display:none}
+.cps-cell{font-size:11px;line-height:1.5;word-break:keep-all;white-space:normal}
+.cp-highlight{background:#fff59d;border-radius:3px;padding:0 2px;font-weight:600}
+.info-bar{margin-top:8px;font-size:11px;color:#888;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.notice{font-size:11px;border-radius:6px;padding:6px 12px;margin-bottom:10px}
+.notice-blue{background:#E6F1FB;color:#0C447C;border:1px solid #B5D4F4}
+.notice-green{background:#EAF3DE;color:#27500A;border:1px solid #C0DD97}
+.notice-red{background:#FCEBEB;color:#791F1F;border:1px solid #F7C1C1}
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  min-height: 100vh;
-}
+th.sort-asc::after{content:' ↑';color:#378ADD}
+th.sort-desc::after{content:' ↓';color:#378ADD}
+th.no-sort{cursor:default}
 
-/* ── Layout ── */
-.page {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem 3rem;
-  transition: padding-right .3s;
-}
-.page.panel-open { padding-right: calc(var(--panel-w) + 2rem); }
-
-.page-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-.page-header h1 {
-  font-size: 20px; font-weight: 600;
-  display: flex; align-items: center; gap: 8px;
-}
-.page-header h1 i { font-size: 20px; color: var(--teal); }
-.page-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
-.hint {
-  font-size: 12px; color: var(--text-faint);
-  background: var(--surface2); border: 0.5px solid var(--border);
-  border-radius: var(--radius); padding: 6px 12px;
-  display: flex; align-items: center; gap: 6px; white-space: nowrap;
-}
-
-/* ── Timeline ── */
-.timeline-wrap { overflow-x: auto; padding-bottom: 8px; }
-.timeline { min-width: 980px; display: flex; flex-direction: column; }
-
-.weeks-row {
-  display: grid;
-  grid-template-columns: 130px repeat(5,1fr) 1px repeat(3,1fr);
-  gap: 6px; margin-bottom: 8px; align-items: stretch;
-}
-.label-spacer { background: transparent; }
-.week-cell {
-  text-align: center; padding: 7px 6px;
-  border-radius: var(--radius); font-size: 11px; font-weight: 600;
-  border: 0.5px solid var(--border);
-}
-.week-cell .fase-tag { font-size: 10px; font-weight: 400; opacity:.75; display:block; margin-top:1px; }
-.week-cell.m2 { background:var(--m2-bg); color:var(--m2-text); border-color:var(--m2-border); }
-.week-cell.m1 { background:var(--m1-bg); color:var(--m1-text); border-color:var(--m1-border); }
-.week-cell.current { background:var(--teal) !important; color:#fff !important; border-color:var(--teal-dark) !important; box-shadow:0 0 0 3px rgba(29,158,117,.2); }
-.week-cell.current .fase-tag { opacity:.85; }
-.divider-head { background: var(--border-strong); width:1px; align-self:stretch; }
-
-.phase-legend { display:flex; gap:12px; margin-bottom:14px; margin-left:136px; }
-.phase-pill {
-  font-size:11px; padding:3px 10px; border-radius:20px; border:0.5px solid; font-weight:500;
-}
-.phase-pill.m2 { background:var(--m2-bg); color:var(--m2-text); border-color:var(--m2-border); }
-.phase-pill.m1 { background:var(--m1-bg); color:var(--m1-text); border-color:var(--m1-border); }
-
-.area-row {
-  display: grid;
-  grid-template-columns: 130px repeat(5,1fr) 1px repeat(3,1fr);
-  gap: 6px; margin-bottom: 10px; align-items: start;
-}
-.area-divider { background:var(--border); width:1px; align-self:stretch; }
-.area-label { display:flex; flex-direction:column; gap:4px; padding-top:6px; padding-right:8px; }
-.area-dot-label { display:flex; align-items:center; gap:7px; }
-.area-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; margin-top:1px; }
-.dot-teal { background:var(--teal); }
-.dot-blue { background:var(--blue); }
-.area-name { font-size:12px; font-weight:600; line-height:1.3; }
-.cell-empty { min-height:44px; }
-.sep-row { height:1px; background:var(--border); margin:8px 0 14px; }
-
-/* ── Task card ── */
-.task-card {
-  background: var(--surface);
-  border: 0.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 9px 10px;
-  margin-bottom: 6px;
-  cursor: pointer;
-  transition: border-color .15s, background .12s;
-  user-select: none;
-}
-.task-card:last-child { margin-bottom: 0; }
-.task-card:hover { border-color: var(--border-strong); background: var(--surface2); }
-.task-card.active { border-color: var(--border-strong); background: var(--surface2); }
-.task-card.teal { border-left: 3px solid var(--teal); }
-.task-card.blue { border-left: 3px solid var(--blue); }
-
-.task-title {
-  font-size: 12px; font-weight: 500; line-height: 1.35;
-  display: flex; align-items: flex-start; gap: 5px;
-  margin-bottom: 5px;
-}
-.task-title i { font-size: 13px; margin-top:1px; flex-shrink:0; color:var(--text-muted); }
-
-.card-meta {
-  display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
-}
-.card-badge {
-  font-size: 10px; padding: 1px 6px;
-  border-radius: 4px; border: 0.5px solid var(--border);
-  color: var(--text-faint); background: var(--surface2);
-  display: inline-flex; align-items: center; gap: 3px;
-}
-.card-badge i { font-size: 11px; }
-.card-badge.has-steps { color: var(--teal-dark); border-color: var(--teal-border); background: var(--teal-light); }
-.card-badge.has-links { color: var(--blue-dark); border-color: var(--blue-border); background: var(--blue-light); }
-
-/* ── Side panel ── */
-.panel-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.15);
-  z-index: 100;
-}
-.panel-overlay.open { display: block; }
-
-.side-panel {
-  position: fixed;
-  top: 0; right: 0; bottom: 0;
-  width: var(--panel-w);
-  background: var(--surface);
-  border-left: 0.5px solid var(--border-strong);
-  z-index: 101;
-  display: flex;
-  flex-direction: column;
-  transform: translateX(100%);
-  transition: transform .25s cubic-bezier(.4,0,.2,1);
-  overflow: hidden;
-}
-.side-panel.open { transform: translateX(0); }
-
-.panel-header {
-  padding: 16px 18px 14px;
-  border-bottom: 0.5px solid var(--border);
-  display: flex; align-items: flex-start; gap: 10px;
-  flex-shrink: 0;
-}
-.panel-color-bar {
-  width: 4px; border-radius: 2px; align-self: stretch; flex-shrink: 0;
-}
-.panel-color-bar.teal { background: var(--teal); }
-.panel-color-bar.blue { background: var(--blue); }
-.panel-header-text { flex: 1; min-width: 0; }
-.panel-header-text h2 { font-size: 15px; font-weight: 600; line-height: 1.3; }
-.panel-header-text .panel-meta { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
-.panel-close {
-  background: transparent; border: none; cursor: pointer;
-  color: var(--text-muted); font-size: 20px; padding: 2px;
-  display: flex; align-items: center; flex-shrink: 0;
-  border-radius: 6px; transition: background .12s;
-}
-.panel-close:hover { background: var(--surface2); }
-
-.panel-body {
-  flex: 1; overflow-y: auto; padding: 18px;
-  display: flex; flex-direction: column; gap: 20px;
-}
-
-/* Section inside panel */
-.psec-label {
-  font-size: 11px; font-weight: 600; letter-spacing: .05em;
-  text-transform: uppercase; color: var(--text-faint);
-  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
-}
-.psec-label i { font-size: 14px; }
-
-/* Steps */
-.steps-list { display: flex; flex-direction: column; gap: 5px; }
-.step-row {
-  display: flex; align-items: flex-start; gap: 8px;
-  background: var(--surface2); border-radius: var(--radius);
-  padding: 6px 8px; border: 0.5px solid var(--border);
-}
-.step-num {
-  font-size: 10px; font-weight: 600; color: var(--text-faint);
-  min-width: 16px; text-align: right; padding-top: 2px;
-}
-.step-text {
-  flex: 1; font-size: 13px; color: var(--text);
-  background: transparent; border: none; outline: none;
-  font-family: inherit; resize: none;
-  min-height: 20px; line-height: 1.45;
-  overflow: hidden;
-}
-.step-del {
-  background: transparent; border: none; cursor: pointer;
-  color: var(--text-faint); font-size: 16px; padding: 1px 2px;
-  border-radius: 4px; transition: color .12s, background .12s;
-  display: flex; align-items: center; flex-shrink: 0;
-  margin-top: 1px;
-}
-.step-del:hover { color: #cc3333; background: #fff0f0; }
-
-.reorder-col {
-  display: flex; align-items: center; flex-shrink: 0;
-  margin-top: 1px; cursor: grab; color: var(--text-faint);
-  touch-action: none;
-}
-.reorder-col:active { cursor: grabbing; }
-.reorder-col i { font-size: 15px; }
-
-.step-row, .link-row-panel { transition: transform .12s, opacity .12s; }
-.step-row.dragging, .link-row-panel.dragging { opacity: .35; }
-.step-row.drag-over-top, .link-row-panel.drag-over-top { box-shadow: inset 0 2px 0 0 var(--teal); }
-.step-row.drag-over-bottom, .link-row-panel.drag-over-bottom { box-shadow: inset 0 -2px 0 0 var(--teal); }
-
-.btn-add-step {
-  font-size: 12px; padding: 5px 10px;
-  border: 0.5px dashed var(--border-strong);
-  border-radius: var(--radius); background: transparent;
-  color: var(--text-muted); cursor: pointer; font-family: inherit;
-  display: flex; align-items: center; gap: 5px;
-  transition: background .12s, border-color .12s;
-  width: 100%;
-}
-.btn-add-step:hover { background: var(--surface2); border-color: var(--teal); color: var(--teal-dark); }
-
-/* Links */
-.links-list { display: flex; flex-direction: column; gap: 5px; }
-.link-row-panel {
-  display: flex; align-items: center; gap: 6px;
-}
-.link-name-inp {
-  width: 110px; flex-shrink: 0;
-  font-size: 12px; padding: 5px 8px;
-  border: 0.5px solid var(--border-strong);
-  border-radius: 6px; background: var(--surface);
-  color: var(--text); font-family: inherit; outline: none;
-}
-.link-name-inp:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(55,138,221,.15); }
-.link-url-inp {
-  flex: 1; min-width: 0;
-  font-size: 12px; padding: 5px 8px;
-  border: 0.5px solid var(--border-strong);
-  border-radius: 6px; background: var(--surface);
-  color: var(--text); font-family: inherit; outline: none;
-}
-.link-url-inp:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(55,138,221,.15); }
-.link-go {
-  background: transparent; border: 0.5px solid var(--blue-border);
-  color: var(--blue-dark); border-radius: 6px; cursor: pointer;
-  font-size: 16px; padding: 4px 6px; display: flex; align-items: center;
-  transition: background .12s; flex-shrink: 0;
-  text-decoration: none;
-}
-.link-go:hover { background: var(--blue-light); }
-.link-go.disabled { opacity: .3; pointer-events: none; }
-.link-del-btn {
-  background: transparent; border: none; cursor: pointer;
-  color: var(--text-faint); font-size: 16px; padding: 3px 4px;
-  border-radius: 4px; display: flex; align-items: center; flex-shrink: 0;
-  transition: color .12s, background .12s;
-}
-.link-del-btn:hover { color: #cc3333; background: #fff0f0; }
-
-.btn-add-link {
-  font-size: 12px; padding: 5px 10px;
-  border: 0.5px dashed var(--border-strong);
-  border-radius: var(--radius); background: transparent;
-  color: var(--text-muted); cursor: pointer; font-family: inherit;
-  display: flex; align-items: center; gap: 5px;
-  transition: background .12s, border-color .12s;
-  width: 100%;
-}
-.btn-add-link:hover { background: var(--surface2); border-color: var(--blue); color: var(--blue-dark); }
-
-/* Panel footer */
-.panel-footer {
-  padding: 12px 18px;
-  border-top: 0.5px solid var(--border);
-  display: flex; gap: 8px; flex-shrink: 0;
-}
-.btn-save-panel {
-  flex: 1; padding: 8px;
-  background: var(--teal); color: #fff;
-  border: none; border-radius: var(--radius);
-  font-size: 13px; font-weight: 500; cursor: pointer;
-  font-family: inherit;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  transition: opacity .12s;
-}
-.btn-save-panel:hover { opacity: .88; }
-.btn-save-panel.blue-area { background: var(--blue); }
-.btn-cancel-panel {
-  padding: 8px 14px;
-  background: transparent; border: 0.5px solid var(--border-strong);
-  border-radius: var(--radius); font-size: 13px;
-  color: var(--text-muted); cursor: pointer; font-family: inherit;
-  transition: background .12s;
-}
-.btn-cancel-panel:hover { background: var(--surface2); }
-
-/* Toast */
-.toast {
-  position: fixed; bottom: 1.5rem; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--text); color: var(--surface);
-  font-size: 13px; padding: 8px 16px; border-radius: 20px;
-  opacity: 0; transition: opacity .2s, transform .2s;
-  pointer-events: none; z-index: 200; white-space: nowrap;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* Shared btn base */
-.btn {
-  font-size: 11px; padding: 3px 9px; border-radius: 6px;
-  border: 0.5px solid var(--border-strong);
-  background: transparent; color: var(--text-muted);
-  cursor: pointer; font-family: inherit;
-  transition: background .12s;
-  display: inline-flex; align-items: center; gap: 4px;
-  text-decoration: none; line-height: 1.4;
-}
-.btn:hover { background: var(--surface2); }
-.btn i { font-size: 12px; }
-
-/* Task modal */
-.modal-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.25);
-  z-index: 110;
-}
-.modal-overlay.open { display: block; }
-.task-modal {
-  display: none;
-  position: fixed; top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  border: 0.5px solid var(--border-strong);
-  width: 340px; max-width: 90vw;
-  padding: 18px; z-index: 111;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-}
-.task-modal.open { display: block; }
-.task-modal h3 { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
-.task-modal label {
-  display: block; font-size: 11px; font-weight: 600;
-  color: var(--text-muted); margin: 10px 0 4px;
-  text-transform: uppercase; letter-spacing: .03em;
-}
-.task-modal select, .task-modal input {
-  width: 100%; font-size: 13px; padding: 7px 9px;
-  border: 0.5px solid var(--border-strong); border-radius: 6px;
-  background: var(--surface); color: var(--text); font-family: inherit;
-}
-.modal-actions { display: flex; gap: 8px; margin-top: 16px; }
-.modal-actions .btn-save-panel { flex: 1; }
-
-/* Tabs */
-.btn.active { background: var(--teal); color: #fff; border-color: var(--teal-dark); }
-.btn.active:hover { background: var(--teal); opacity: .92; }
-
-/* Task done check */
-.task-check {
-  color: var(--text-faint); cursor: pointer; padding: 2px;
-  border-radius: 4px; flex-shrink: 0; display: flex; align-items: center;
-}
-.task-check:hover { background: var(--surface2); }
-.task-check i { font-size: 17px; }
-.task-card.done { opacity: .55; }
-.task-card.done .task-title { text-decoration: line-through; }
-
-/* Puntual view */
-.eventual-cards { display: flex; flex-wrap: wrap; gap: 8px; }
-.eventual-cards .task-card { width: 220px; margin-bottom: 0; }
-.eventual-empty { font-size: 12px; color: var(--text-faint); padding: 8px 0; }
+/* ── COLORES DE FILA POR TIPO DE ESCENARIO ── */
+tr.row-amp td{background:#d9ead3}
+tr.row-amp:hover td{background:#c6e0b4}
+tr.row-cierre td{background:#f4cccc}
+tr.row-cierre:hover td{background:#ea9999}
+tr.row-baja td{background:#fce5cd}
+tr.row-baja:hover td{background:#f9cb9c}
+tr.row-alta td{background:#ffffff}
+tr.row-alta:hover td{background:#faf9f7}
+/* cp-match tiene prioridad sobre el color de fila */
+tr.cp-match td{background:#fffbe6!important}
 </style>
 </head>
 <body>
 
-<div class="page" id="page">
-  <div class="page-header">
-    <div>
-      <h1><i class="ti ti-layout-columns"></i>Planning operativo — Mercadona Online</h1>
-      <p>Haz clic en cualquier tarea para ver el detalle, añadir pasos y gestionar enlaces</p>
-    </div>
-    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-      <div class="hint"><i class="ti ti-click"></i>Clic en tarea para abrir detalle</div>
-      <div class="hint" id="sync-badge"><i class="ti ti-loader"></i><span id="sync-text">Iniciando…</span></div>
-      <button class="btn" onclick="openTaskModal()" title="Añadir una tarea nueva a Gestión Centros u Oferta"><i class="ti ti-plus"></i>Nueva tarea</button>
-      <button class="btn" id="btn-sync-now" onclick="syncToJsonBin()" title="Forzar sincronización manual (solo necesario para quien mantiene los datos)"><i class="ti ti-cloud-upload"></i>Sincronizar</button>
-    </div>
-  </div>
+<h1>QCC Expansión Tiendas Mercadona Online 2026</h1>
 
-  <div class="phase-legend" style="margin-bottom:0;">
-    <span class="phase-pill m2">◀ M-2 · 5 semanas</span>
-    <span class="phase-pill m1">M-1 · 3 semanas ▶</span>
-  </div>
-
-  <div style="display:flex; gap:8px; margin:14px 0 18px;">
-    <button class="btn active" id="tab-rutinario" onclick="switchView('rutinario')"><i class="ti ti-calendar-week"></i>Rutinario</button>
-    <button class="btn" id="tab-puntual" onclick="switchView('puntual')"><i class="ti ti-list-details"></i>Puntual</button>
-  </div>
-
-  <div id="view-rutinario">
-    <div class="timeline-wrap">
-      <div class="timeline" id="app"></div>
-    </div>
-  </div>
-
-  <div id="view-puntual" style="display:none;">
-    <div id="eventual-app"></div>
-  </div>
+<div class="top-bar">
+  <div class="csv-status" id="csvStatus">Cargando datos...</div>
+  <span class="sync-status sync-loading" id="syncStatus">Conectando...</span>
+  <a class="btn" href="https://metabase.prod.monline/question/32873-qcc-ntc-nsd" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">Abrir consulta Metabase ↗</a>
+  <button class="btn btn-warn" onclick="showDropOverlay()">Actualizar datos ↑</button>
+  <button class="btn" onclick="exportCSV()">Exportar CSV</button>
+  <button class="btn btn-primary" onclick="exportXLSX()">Exportar XLSX</button>
+  <span class="saved-badge" id="saved-badge">Guardado</span>
 </div>
 
-<!-- Side panel -->
-<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+<div id="noticeArea"></div>
 
-<div class="side-panel" id="panel">
-  <div class="panel-header">
-    <div class="panel-color-bar" id="panel-bar"></div>
-    <div class="panel-header-text">
-      <h2 id="panel-title"></h2>
-      <div class="panel-meta" id="panel-meta"></div>
-    </div>
-    <button class="panel-close" onclick="closePanel()" aria-label="Cerrar"><i class="ti ti-x"></i></button>
-  </div>
-
-  <div class="panel-body">
-
-    <!-- Steps section -->
-    <div>
-      <div class="psec-label"><i class="ti ti-list-check"></i>Pasos</div>
-      <div class="steps-list" id="steps-list"></div>
-      <button class="btn-add-step" onclick="addStep()">
-        <i class="ti ti-plus"></i>Añadir paso
-      </button>
-    </div>
-
-    <!-- Links section -->
-    <div>
-      <div class="psec-label"><i class="ti ti-link"></i>Enlaces</div>
-      <div class="links-list" id="links-list"></div>
-      <button class="btn-add-link" onclick="addLink()">
-        <i class="ti ti-plus"></i>Añadir enlace
-      </button>
-    </div>
-
-  </div>
-
-  <div class="panel-footer">
-    <button class="btn-save-panel" id="btn-save-panel" onclick="savePanel()">
-      <i class="ti ti-check"></i>Guardar
-    </button>
-    <button class="btn-cancel-panel" onclick="closePanel()">Cancelar</button>
-    <button class="btn-cancel-panel" id="btn-delete-task" onclick="deleteTask()" style="display:none; color:#cc3333; border-color:#cc3333;">Eliminar</button>
-  </div>
-</div>
-
-<!-- Task modal -->
-<div class="modal-overlay" id="task-modal-overlay" onclick="closeTaskModal()"></div>
-<div class="task-modal" id="task-modal">
-  <h3>Nueva tarea</h3>
-  <label for="tm-type">Tipo</label>
-  <select id="tm-type" onchange="onTaskTypeChange()">
-    <option value="rutinaria">Rutinaria (semanal)</option>
-    <option value="puntual">Puntual</option>
+<div class="toolbar">
+  <select id="sel-mes">
+    <option value="">Todos los meses</option>
+    <option value="1">Enero</option><option value="2">Febrero</option>
+    <option value="3">Marzo</option><option value="4">Abril</option>
+    <option value="5">Mayo</option><option value="6">Junio</option>
+    <option value="7">Julio</option><option value="8">Agosto</option>
+    <option value="9">Septiembre</option><option value="10">Octubre</option>
+    <option value="11">Noviembre</option><option value="12">Diciembre</option>
   </select>
-  <label for="tm-area">Grupo</label>
-  <select id="tm-area">
-    <option value="centros">Gestión Centros</option>
-    <option value="oferta">Gestión Oferta</option>
+  <select id="sel-categoria">
+    <option value="">Todas las categorías</option>
+    <option value="implantacion">Implantaciones</option>
+    <option value="ampliacion">Ampliaciones</option>
+    <option value="bajada">Bajadas</option>
+    <option value="reapertura">Reaperturas</option>
+    <option value="cierre">Cierres</option>
   </select>
-  <div id="tm-week-wrap">
-    <label for="tm-week">Semana</label>
-    <select id="tm-week"></select>
-  </div>
-  <label for="tm-title">Título</label>
-  <input id="tm-title" type="text" placeholder="Nombre de la tarea">
-  <label for="tm-icon">Icono (opcional)</label>
-  <input id="tm-icon" type="text" placeholder="ti-flag — por defecto ti-list">
-  <div class="modal-actions">
-    <button class="btn-save-panel" onclick="createTask()"><i class="ti ti-check"></i>Crear</button>
-    <button class="btn-cancel-panel" onclick="closeTaskModal()">Cancelar</button>
+  <select id="sel-tipo"><option value="">Todos los escenarios</option></select>
+  <select id="sel-zona"><option value="">Todas las zonas</option></select>
+  <input type="text" id="buscar" placeholder="Buscar centro, población...">
+  <input type="text" id="buscar-cp" placeholder="Buscar código postal...">
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-label">Total movimientos</div><div class="stat-value" id="st-total">—</div></div>
+  <div class="stat"><div class="stat-label">Aperturas / altas</div><div class="stat-value" id="st-altas">—</div></div>
+  <div class="stat"><div class="stat-label">Ampliaciones</div><div class="stat-value" id="st-amp">—</div></div>
+  <div class="stat"><div class="stat-label">Bajadas</div><div class="stat-value" id="st-baj">—</div></div>
+  <div class="stat"><div class="stat-label">Cierres</div><div class="stat-value" id="st-cie">—</div></div>
+</div>
+
+<div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:50px" data-col="0">Zona</th>
+        <th style="width:65px" data-col="1">Centro</th>
+        <th style="width:140px" data-col="2">Denominación</th>
+        <th style="width:100px" data-col="3">Población</th>
+        <th style="width:90px" data-col="4">Provincia</th>
+        <th style="width:155px" data-col="5">Escenario</th>
+        <th style="width:250px" class="no-sort">CPs que servimos</th>
+        <th style="width:140px" class="editable-col" data-col="tc">Tiendas que dejan TC ✎</th>
+        <th style="width:90px" class="editable-col" data-col="fe" data-date="true">Fecha formación ✎</th>
+        <th style="width:80px" data-col="9" data-date="true">Cierre servicio</th>
+        <th style="width:80px" data-col="10" data-date="true">1er servicio</th>
+      </tr>
+    </thead>
+    <tbody id="tbody">
+      <tr><td colspan="11" style="text-align:center;padding:3rem;color:#888">Cargando...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="info-bar">
+  <span id="count-label"></span>
+  <span>Columnas azules editables · Amarillo = coincidencia CP · Los edits se sincronizan automáticamente para todos</span>
+</div>
+
+<div class="drop-overlay" id="dropOverlay">
+  <div class="drop-box">
+    <h2>Actualizar CSV</h2>
+    <p>Sube el nuevo CSV exportado desde Metabase. Se subirá automáticamente a JSONBin y todos verán los datos nuevos. Tus edits se conservarán.</p>
+    <div class="drop-area" id="dropArea" onclick="document.getElementById('fileInput').click()">
+      <input type="file" id="fileInput" accept=".csv">
+      <strong>Arrastra el CSV aquí</strong>
+      <p style="margin-top:6px">o haz clic para seleccionar</p>
+    </div>
+    <button class="btn" onclick="hideDropOverlay()">Cancelar</button>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
-
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <script>
-const WEEKS = [
-  {key:'s1m2',label:'Sem 1',fase:'M-2',cls:'m2', mOffset:-2, weekIdx:0},
-  {key:'s2m2',label:'Sem 2',fase:'M-2',cls:'m2', mOffset:-2, weekIdx:1},
-  {key:'s3m2',label:'Sem 3',fase:'M-2',cls:'m2', mOffset:-2, weekIdx:2},
-  {key:'s4m2',label:'Sem 4',fase:'M-2',cls:'m2', mOffset:-2, weekIdx:3},
-  {key:'s5m2',label:'Sem 5',fase:'M-2',cls:'m2', mOffset:-2, weekIdx:4},
-  {key:'s1m1',label:'Sem 1',fase:'M-1',cls:'m1', mOffset:-1, weekIdx:0},
-  {key:'s2m1',label:'Sem 2',fase:'M-1',cls:'m1', mOffset:-1, weekIdx:1},
-  {key:'s3m1',label:'Sem 3',fase:'M-1',cls:'m1', mOffset:-1, weekIdx:2},
-];
+const JSONBIN_KEY = '$2a$10$ZefKKCnShGfeqJ64RNbLvenbqRngR8KVQBmGkPmaZ6oYqrkNf/XeS';
+const JSONBIN_EDITS_BIN = '69e78902aaba882197218832';
+const JSONBIN_EDITS_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_EDITS_BIN}`;
 
-// Returns the Nth monday (0-based) of a given year+month
-function nthMonday(year, month, n) {
-  const d = new Date(year, month, 1);
-  const dow = d.getDay(); // 0=sun,1=mon...
-  const daysToMon = dow === 1 ? 0 : (8 - dow) % 7;
-  d.setDate(1 + daysToMon + n * 7);
-  return d;
+const BUILTIN_ROWS = [["Z12", "3885", "PUERTO DEL ROSARIO", "Puerto del Rosario", "Las Palmas", "", "", "", "", "11/1/2026", ""], ["Z12", "3935", "CORRALEJO", "La Oliva", "Las Palmas", "NTC90", "35600 35610 35612 35649 35660", "", "", "", "11/1/2026"], ["Z11", "2528", "PALMA NOVA", "Calvià", "Illes Balears", "Ampliación de NTC90 a NTC150", "07013 07014 07015", "", "", "", "16/1/2026"], ["Z53", "3664", "ESTADI BALEAR", "Palma", "Illes Balears", "Ampliación de NTC90 a NTC120", "07006 07007 07008", "", "", "", "16/1/2026"], ["Z53", "4687", "CAMÍ DELS REIS", "Palma", "Illes Balears", "Ampliación de NTC90 a NTC120", "07003 07010 07011 07120 07121 07190", "", "", "", "16/1/2026"], ["Z53", "4744", "SON FUSTER", "Palma", "Illes Balears", "NTC90", "07005 07009 07110 07141 07193", "", "", "", "16/1/2026"], ["Z01", "3410", "BENAGUASIL", "Benaguasil", "València/Valencia", "NTC120", "46150 46160 46163 46169 46171 46174 46180 46181 46185 46191", "", "", "", "23/1/2026"], ["Z15", "4402", "CARLOS V", "Melilla", "Melilla", "Ampliación de NTC90 a NTC120", "52001 52002 52003 52004 52005 52006", "", "", "", "23/1/2026"], ["Z43", "4483", "CIEMPOZUELOS", "Ciempozuelos", "Madrid", "Ampliación de NTC90 a NTC120", "28300 28350 28380 45223 45224 45300 45311 45312 45340 45350", "", "", "", "23/1/2026"], ["Z55", "4556", "PASEO DEL MUELLE", "Talavera de la Reina", "Toledo", "Ampliación de NTC30 a NTC60", "45600 45694 45695", "", "", "", "23/1/2026"], ["Z54", "2717", "LOS OLIVOS", "Adeje", "Santa Cruz de Tenerife", "Ampliación de NTC120 a NTC150", "38650 38660 38670 38677 38678 38679 38680 38683 38685 38686 38687", "", "", "", "30/1/2026"], ["Z53", "3924", "POIMA", "Maó", "Illes Balears", "NTC90", "07700 07701 07702 07703 07710 07711 07712 07713 07714 07720 07730", "", "", "", "30/1/2026"], ["Z54", "3992", "EL CAMISÓN", "Arona", "Santa Cruz de Tenerife", "NTC60", "38620 38626 38627 38628 38629 38639 38640 38649 38652", "", "", "", "30/1/2026"], ["Z26", "4436", "AVDA. ESPAÑA", "Ceuta", "Ceuta", "Ampliación de NTC120 a NTC150", "51001 51002 51003 51004 51005", "", "", "", "30/1/2026"], ["Z25", "4410", "AVDA. PRÍNCIPE DE ESPAÑA", "El Ejido", "Almería", "Ampliación de NTC60 a NTC90", "04700 04710 04711 04713 04716 04717 04720 04721 04727 04738 04740 04741 04743 04745 04746 04750 04760 04769 04770 04778 04779", "", "", "", "6/2/2026"], ["Z25", "4623", "LA CAÑADA", "Almería", "Almería", "Ampliación de NTC60 a NTC90", "04005 04006 04007 04120 04130 04131 04240", "", "", "", "6/2/2026"], ["Z48", "4632", "MULA", "Mula", "Murcia", "Ampliación de NTC30 a NTC60", "30170 30176 30190 30191 30193 30194 30400 30430 30439 30530 30535 30540 30550 30558 30559 30560 30562 30563 30564 30565 30566 30600 30609 30610 30611 30612 30613 30832", "", "", "", "6/2/2026"], ["Z28", "4701", "BARRANCO SECO", "Las Palmas de Gran Canaria", "Las Palmas", "Ampliación de NTC90 a NTC120", "35001 35002 35003 35004 35011 35014", "", "", "", "6/2/2026"], ["Z28", "4745", "TAMARANA", "Las Palmas de Gran Canaria", "Las Palmas", "NTC90", "35017 35200 35210 35213 35218 35220 35229 35300 35310", "", "", "", "6/2/2026"], ["Z47", "2129", "GUADIX", "Guadix", "Granada", "NTC15", "18500 18510 18511 18516 18518 18519", "", "", "", "13/2/2026"], ["Z47", "2623", "ATARFE", "Atarfe", "Granada", "Ampliación de NTC30 a NTC60", "18011 18170 18182 18197 18210 18212 18213 18220 18230 18240 18247 18248 18249 18250 18260 18290 18291 18293 18350 18380", "", "", "", "13/2/2026"], ["Z18", "3968", "EL FLORÍO", "Granada", "Granada", "Ampliación de NTC120 a NTC150", "18001 18003 18004 18007 18012 18013 18014 18015 18101 18102 18110 18151 18195 18200 18300 18310 18320 18327 18328 18329 18330 18339 18340 18360 18369 18370", "", "", "", "13/2/2026"], ["Z18", "4028", "LA ZUBIA", "La Zubia", "Granada", "Ampliación de NTC30 a NTC60", "18140 18150 18152 18190 18191 18193 18194 18199 18620 18630 18640", "", "", "", "13/2/2026"], ["Z53", "4154", "POICI", "Ciutadella de Menorca", "Illes Balears", "NTC60", "07750 07760 07769", "", "", "", "13/2/2026"], ["Z26", "3571", "PLAYA RINCONCILLO", "Algeciras", "Cádiz", "NTC60", "11201 11203 11206 11207 11380 11390", "", "", "", "20/2/2026"], ["Z47", "4271", "AVDA. BLAS INFANTE", "Andújar", "Jaén", "NTC30", "23006 23620 23630 23740 23747 23749", "", "", "", "20/2/2026"], ["Z47", "4544", "C. C. JAÉN PLAZA", "Jaén", "Jaén", "Ampliación de NTC120 a NTC150", "23001 23002 23003 23004 23005 23007 23008 23009 23100 23110 23160 23170 23194 23196 23600 23640 23650 23658", "", "", "", "20/2/2026"], ["Z16", "4678", "AVDA. DE LA CRUZ ROJA", "Arcos de la Frontera", "Cádiz", "NTC60", "11170 11178 11180 11190 11600 11612 11630 11638 11640 11648 11649 11650 11660 11670", "", "", "", "20/2/2026"], ["Z36", "3087", "L'ÀNEC BLAU", "Castelldefels", "Barcelona", "Ampliación de NTC90 a NTC120", "08860", "", "", "", "27/2/2026"], ["Z17", "3769", "CTRA. PALMA DEL RÍO", "Córdoba", "Córdoba", "NTC60", "14001 14002 14003 14006 14008 14009", "", "", "", "27/2/2026"], ["Z44", "3850", "ESPARREGUERA", "Esparreguera", "Barcelona", "Ampliación de NTC30 a NTC60", "08292 08293 08784", "", "", "", "27/2/2026"], ["Z24", "3943", "C/ PAU CASALS", "Girona", "Girona", "NTC60", "17001 17005 17006 17190", "", "", "", "27/2/2026"], ["Z17", "4353", "POZOBLANCO", "Pozoblanco", "Córdoba", "NTC15", "14200 14240 14400 14412 14450 14460 14480", "", "", "", "27/2/2026"], ["Z27", "3697", "CAMINO DEL CEMENTERIO", "Valladolid", "Valladolid", "Ampliación de NTC60 a NTC90", "47001 47002 47003 47004 47005 47006 47007 47009 47010 47011 47014 47015 47017 47155 47170 47194 47270 47620", "", "", "", "6/3/2026"], ["Z36", "4030", "CARRER DE LA PIERA", "Vilanova i la Geltrú", "Barcelona", "Ampliación de NTC90 a NTC120", "08800 08880", "", "", "", "6/3/2026"], ["Z20", "4294", "CALELLA", "Calella", "Barcelona", "Ampliación de NTC60 a NTC90", "08350 08358 08359 08360 08393 08394 08396", "", "", "", "6/3/2026"], ["Z41", "4471", "CTRA. VALLADOLID", "Ávila", "Ávila", "Ampliación de NTC30 a NTC60", "05001 05002 05003 05004 05005 05140 05160 05192 05194 05195 05196 05197", "", "", "", "6/3/2026"], ["Z38", "4804", "C. C. MARINEDA CITY", "A Coruña", "A Coruña", "NTC60", "15001 15002 15003 15004 15005 15006 15007 15008 15010 15011", "", "", "", "6/3/2026"], ["Z12", "3280", "SAN SEBASTIÁN", "Santa Cruz de Tenerife", "Santa Cruz de Tenerife", "Ampliación de NTC120 a NTC150", "38001 38002 38003 38004 38005 38006 38007 38120 38150 38160 38170 38180", "", "", "", "13/3/2026"], ["Z54", "3836", "LA GAÑANIA", "Los Realejos", "Santa Cruz de Tenerife", "Ampliación de NTC30 a NTC60", "38300 38310 38312 38315 38410 38412 38413 38414 38415 38416 38417 38418 38419 38420 38428 38429 38430 38434 38440 38441 38450 38458", "", "", "", "13/3/2026"], ["Z54", "4434", "VALLE DE GÜÍMAR", "Arafo", "Santa Cruz de Tenerife", "Ampliación de NTC60 a NTC90", "38109 38190 38290 38500 38508 38509 38510 38520 38530 38540 38550 38560 38590 38591", "", "", "", "13/3/2026"], ["Z31", "4562", "C/ ACERO", "Mérida", "Badajoz", "Ampliación de NTC60 a NTC90", "06185 06186 06200 06207 06220 06225 06230 06300 06310 06320 06480 06490 06498 06499 06800 06810 06850 06860 06880 06892", "", "", "", "13/3/2026"], ["Z12", "4631", "TEJINA", "San Cristóbal de La Laguna", "Santa Cruz de Tenerife", "NTC30", "38240 38250 38260 38270 38280 38292 38330 38358", "", "", "", "13/3/2026"], ["Z41", "2946", "LA HERRERÍA", "Ponferrada", "León", "NTC15", "24300 24310 24311 24314 24315 24316 24317 24318 24319 24370 24390 24398 24400 24401 24402 24403 24404 24410 24411 24412 24413 24414 24415 24490 24491 24492", "", "", "", "20/3/2026"], ["Z51", "3669", "LOS OCHOS", "Torrelavega", "Cantabria", "NTC30", "39300 39311 39500 39507 39509 39530 39538 39539 39590 39591 39592", "", "", "", "20/3/2026"], ["Z32", "3758", "SAMA", "Langreo", "Asturias", "NTC30", "33300 33311 33312 33313 33518 33540 33546 33547 33549 33550 33559 33580 33584 33585 33587 33900 33930 33935 33936 33938 33939 33940 33950 33960", "", "", "", "20/3/2026"], ["Z51", "4778", "SOLARES", "Medio Cudeyo", "Cantabria", "NTC30", "39750 39760 39764 39770 39776 39790 39820 39840", "", "", "", "20/3/2026"], ["Z24", "3945", "PALAMÓS", "Palamós", "Girona", "NTC30", "17110 17111 17113 17114 17115 17123 17124 17130 17131 17132 17133 17134 17136 17137 17140 17141 17142 17200 17210 17211 17212 17213 17214 17253 17255 17256 17257 17258", "", "", "", "22/3/2026"], ["Z24", "4313", "LA BISBAL", "La Bisbal d'Empordà", "Girona", "", "", "", "", "22/3/2026", ""], ["Z22", "3632", "LA ALMUNIA DE DOÑA GODINA", "La Almunia de Doña Godina", "Zaragoza", "NTC30", "50100 50196 50198 50270 50280 50300 50420 50430 50441 50450", "", "", "", "27/3/2026"], ["Z44", "4509", "SABIÑÁNIGO", "Sabiñánigo", "Huesca", "NTC30", "22600 22612 22613 22621 22630 22636 22700 22710 22712 22713 22714", "", "", "", "27/3/2026"], ["Z44", "4569", "MONZÓN", "Monzón", "Huesca", "Ampliación de NTC30 a NTC60", "22300 22310 22400 22413 22414 22415 22416 22417 22420 22422 22500 22510 22511 22512 22520 22529 22535 22540 22550 22558 22559 22560 22590", "", "", "", "27/3/2026"], ["Z07", "4587", "C. C. ALBACENTER", "Albacete", "Albacete", "Ampliación de NTC60 a NTC90", "02001 02002 02003 02004 02005 02006 02007 02008 02049", "", "", "", "27/3/2026"], ["Z43", "4606", "LA HARINERA", "Cuenca", "Cuenca", "Ampliación de NTC30 a NTC60", "16001 16002 16003 16004 16123 16190 16191 16196 16400", "", "", "", "27/3/2026"], ["Z51", "3930", "LAS CALIFORNIAS", "Miranda de Ebro", "Burgos", "Ampliación de NTC30 a NTC60", "01330 09200 09219 09293 09500 09550 09554 09556 26200 26210 26211 26212 26214 26220 26221 26222 26230 26240 26241 26290 26291 26330 26338", "", "", "", "10/4/2026"], ["Z44", "4088", "VIELHA", "Vielha e Mijaran", "Lleida", "NTC30", "25530 25537 25538 25539 25540 25550 25551 25598 25599", "", "", "", "10/4/2026"], ["Z42", "4338", "ELGOIBAR", "Elgoibar", "Gipuzkoa", "NTC30", "20590 20600 20720 20820 20830 20850 20860 20870", "", "", "", "10/4/2026"], ["Z44", "4526", "TÀRREGA", "Tàrrega", "Lleida", "NTC15", "25200 25210 25211 25213 25214 25215 25217 25270 25271 25280 25281 25290 25300 25320 25330 25340 25353 25360", "", "", "", "10/4/2026"], ["Z05", "4423", "L'ALFORJA", "Cambrils", "Tarragona", "", "", "", "", "12/4/2026", ""], ["Z05", "4506", "LA SEDERA", "Reus", "Tarragona", "Ampliación de NTC60 a NTC90", "43300 43340 43391 43480 43481 43771 43840 43850 43890 43891 43892", "", "", "", "12/4/2026"], ["Z05", "4708", "EL PALLOL", "Reus", "Tarragona", "NTC60", "43201 43202 43203 43204 43205 43206 43330 43350 43381 43382 43392 43772", "", "", "", "12/4/2026"], ["Z11", "4242", "CAMPOS", "Campos", "Illes Balears", "NTC60", "07200 07210 07260 07609 07620 07629 07630 07638 07639 07640 07650 07660 07669 07670 07691", "", "", "", "17/4/2026"], ["Z11", "4519", "REI JAUME II", "Inca", "Illes Balears", "NTC60", "07140 07143 07144 07312 07320 07330 07340 07350 07360 07510", "", "", "", "17/4/2026"], ["Z11", "4582", "PRÍNCEPS D'ESPANYA", "Marratxí", "Illes Balears", "NTC60", "07198 07199 07600 07610", "", "", "", "17/4/2026"], ["Z24", "4033", "LLORET", "Lloret de Mar", "Girona", "Ampliación de NTC30 a NTC90", "17300 17310 17320 17410 17411", "", "", "", "24/4/2026"], ["Z11", "4137", "SON MÁS", "Andratx", "Illes Balears", "NTC60", "07150 07157 07159 07160 07180 07183 07184 07196", "", "", "", "24/4/2026"], ["Z11", "4232", "CAMÍ CAS RAMONS", "Sant Antoni de Portmany", "Illes Balears", "NTC90", "07816 07817 07818 07819 07820 07829 07830 07839 07840 07849 07850", "", "", "", "24/4/2026"], ["Z24", "4416", "LA PLANTERA", "Blanes", "Girona", "", "", "", "", "24/4/2026", ""], ["Z11", "4781", "SA POBLA", "Sa Pobla", "Illes Balears", "NTC90", "07300 07310 07311 07313 07314 07316 07369 07400 07420 07430 07440 07450 07458 07459 07460 07470 07519", "", "", "", "24/4/2026"], ["Z11", "4253", "PUIG D'EN VALLS", "Santa Eulària des Riu", "Illes Balears", "NTC90", "07800 07813", "", "", "", "8/5/2026"], ["Z20", "2140", "LA GARRIGA", "La Garriga", "Barcelona", "Bajada de NTC90 a NTC60", "08445 08458 08460 08461 08470 08471 08472 08474 08476 08479 08480 08530 08593", "", "", "", "15/5/2026"], ["Z02", "3775", "CAN CUYAS", "Montcada i Reixac", "Barcelona", "NTC90", "08921 08922 08924", "", "", "", "15/5/2026"], ["Z05", "3860", "CUBELLES", "Cubelles", "Barcelona", "Ampliación de NTC60 a NTC90", "08729 43881 43882", "", "", "", "15/5/2026"], ["Z46", "4443", "P. C. LEPESUR", "Lepe", "Huelva", "Ampliación de NTC60 a NTC90", "21400 21409 21410 21420 21430 21431 21440 21449 21450 21459 21500", "", "", "", "15/5/2026"], ["Z38", "4766", "CTRA. DE CEDEIRA", "Narón", "A Coruña", "Ampliación de NTC30 a NTC60", "15401 15402 15403 15404 15405 15406 15490 15500 15510 15520 15528 15570 15572 15578 15600 15620 15621 15622 15623 15624 15626 15627", "", "", "", "15/5/2026"], ["Z05", "3950", "MORA D'EBRE", "Móra d'Ebre", "Tarragona", "Ampliación de NTC15 a NTC60", "43300 43320 43513 43730 43736 43740 43746 43747 43748 43749 43750 43770 43775 43776 43791 43792 43860 43890 43891 43892", "", "", "", "22/5/2026"], ["Z05", "3975", "COMA-RUGA", "El Vendrell", "Tarragona", "Ampliación de NTC30 a NTC90", "43700 43719 43820 43880", "", "", "", "22/5/2026"], ["Z05", "4423", "L'ALFORJA", "Cambrils", "Tarragona", "Apertura tras reforma NTC90", "43340 43391 43771 43850", "", "", "", "25/5/2026"], ["Z05", "4506", "LA SEDERA", "Reus", "Tarragona", "Bajada de NTC90 a NTC60", "43840", "", "", "", "25/5/2026"], ["Z21", "2343", "PROLONGACIÓN ÁNGEL BRUNA", "Cartagena", "Murcia", "Ampliación de NTC60 a NTC150", "30380.3 30380.4", "", "", "", "29/5/2026"], ["Z48", "4771", "FUENTE ÁLAMO", "Fuente Álamo de Murcia", "Murcia", "Ampliación de NTC30 a NTC120", "30201 30203 30204 30205 30300 30310 30319 30320 30333 30334 30393 30394 30396 30594 30860 30868 30870 30875 30876 30877 30879", "", "", "", "29/5/2026"], ["Z21", "4777", "C. C. LA RAMBLA", "Cartagena", "Murcia", "Ampliación de NTC60 a NTC150", "30202 30351 30360 30364 30366 30368 30369 30370 30380.2 30382 30383 30384 30385 30392 30395 30399 30593 30700 30710", "", "", "", "29/5/2026"], ["Z24", "3945", "PALAMÓS", "Palamós", "Girona", "", "", "", "", "31/5/2026", ""], ["Z24", "4313", "LA BISBAL", "La Bisbal d'Empordà", "Girona", "Apertura tras reforma NTC120", "17110 17111 17113 17114 17115 17123 17124 17130 17131 17132 17133 17134 17136 17137 17140 17141 17142 17200 17210 17211 17212 17213 17214 17230 17253 17255 17256 17257 17258", "", "", "", "31/5/2026"], ["Z26", "3700", "BARBATE", "Barbate", "Cádiz", "Ampliación de NTC30 a NTC120", "11140 11159 11160 11393", "", "", "", "5/6/2026"], ["Z14", "3734", "SOTOGRANDE", "San Roque", "Cádiz", "Ampliación de NTC60 a NTC120", "11310 11311 11312 11316 11340 29691 29692", "", "", "", "5/6/2026"], ["Z18", "3905", "SAN CRISTÓBAL", "Almuñécar", "Granada", "Ampliación de NTC60 a NTC120", "18690 18697", "", "", "", "5/6/2026"], ["Z18", "4311", "P. C. MOTRIL", "Motril", "Granada", "Ampliación de NTC60 a NTC120", "18600 18610 18611 18613 18680 18720 18730", "", "", "", "5/6/2026"], ["Z24", "4416", "LA PLANTERA", "Blanes", "Girona", "Apertura tras reforma NTC90", "08389 17300 17410 17411 17412 17420 17421", "", "", "", "5/6/2026"], ["Z26", "4705", "CTRA. DE CHIPIONA", "Sanlúcar de Barrameda", "Cádiz", "NTC90", "11520 11540 11549 11550", "", "", "", "5/6/2026"], ["Z54", "2549", "PLAYA LAS AMÉRICAS", "Adeje", "Santa Cruz de Tenerife", "", "", "", "", "7/6/2026", ""], ["Z54", "4237", "PUERTO SANTIAGO", "Santiago del Teide", "Santa Cruz de Tenerife", "NTC60", "38435 38460 38470 38479 38480 38677 38678 38680 38683 38684 38685 38686 38687 38690", "", "", "", "7/6/2026"], ["Z12", "3885", "PUERTO DEL ROSARIO", "Puerto del Rosario", "Las Palmas", "Apertura tras reforma NTC90", "35600 35610 35612 35649 35660", "", "", "", "11/6/2026"], ["Z12", "3935", "CORRALEJO", "La Oliva", "Las Palmas", "", "", "", "", "11/6/2026", ""], ["Z23", "2316", "BARRIO DE SANTA BÁRBARA", "Soria", "Soria", "", "", "", "", "12/6/2026", ""], ["Z23", "2382", "EDUARDO SAAVEDRA", "Soria", "Soria", "NTC30", "42001 42002 42003 42004 42005 42162 42190 42191", "", "", "", "12/6/2026"], ["Z13", "2875", "C/ MESTRE SERRANO", "Benicarló", "Castelló/Castellón", "Ampliación de NTC30 a NTC90", "12500 12580 12589 12598", "", "", "", "12/6/2026"], ["Z45", "4385", "CTRA. DE ONDA", "Vila-real", "Castelló/Castellón", "Ampliación de NTC30 a NTC90", "12001 12002 12003 12004 12006 12110 12200 12220 12539 12540 12549", "", "", "", "12/6/2026"], ["Z13", "4425", "C. C. ESTEPARK", "Castelló de la Plana", "Castelló/Castellón", "Ampliación de NTC30 a NTC60", "12100 12560", "", "", "", "12/6/2026"], ["Z13", "4558", "AVDA. CASTELLÓN", "Almassora", "Castelló/Castellón", "Ampliación de NTC90 a NTC120", "12130 12190 12594", "", "", "", "12/6/2026"], ["Z40", "2465", "PASEO SALADAR", "Dénia", "Alacant/Alicante", "Ampliación de NTC60 a NTC120", "03700 03709 03750", "", "", "", "19/6/2026"], ["Z45", "2762", "VIRGEN DEL LOSAR", "Sagunt/Sagunto", "València/Valencia", "Ampliación de NTC90 a NTC120", "46148 46149 46500 46501 46520 46529 46590 46591 46592 46595", "", "", "", "19/6/2026"], ["Z24", "3725", "EMPURIA BRAVA", "Castelló d'Empúries", "Girona", "Ampliación de NTC60 a NTC90", "17480 17486 17487 17488 17489 17490 17493 17494 17495", "", "", "", "19/6/2026"], ["Z24", "4113", "CASSÀ", "Cassà de la Selva", "Girona", "Ampliación de NTC60 a NTC90", "17220 17230 17240 17245 17246 17248 17249 17250 17251 17252", "", "", "", "19/6/2026"], ["Z21", "4456", "LA MANGA", "Cartagena", "Murcia", "NTC30", "30380.4", "", "", "", "19/6/2026"], ["Z45", "4472", "AVDA. EUROPA", "la Vall d'Uixó", "Castelló/Castellón", "Ampliación de NTC90 a NTC120", "12005 12520 12526 12529 12530 12550 12590 12591 12592 12593 12600 12609 46510 46511 46512 46513 46514 46515 46593 46594", "", "", "", "19/6/2026"], ["Z25", "3919", "CAMPOHERMOSO", "Níjar", "Almería", "Ampliación de NTC15 a NTC90", "04100 04110 04115 04116 04117 04118 04140 04149 04150 04151", "", "", "", "26/6/2026"], ["Z28", "4377", "PUERTO RICO", "Mogán", "Las Palmas", "Ampliación de NTC60 a NTC90", "35106 35109 35120 35128 35129 35130 35138 35139 35140 35149", "", "", "", "26/6/2026"], ["Z25", "4410", "AVDA. PRÍNCIPE DE ESPAÑA", "El Ejido", "Almería", "Ampliación de NTC90 a NTC120", "04700 04710 04711 04713 04716 04717 04720 04721 04727 04738 04740 04741 04743 04745 04746 04750 04760 04769 04770 04778 04779", "", "", "", "26/6/2026"], ["Z48", "4476", "VERA PUEBLO", "Vera", "Almería", "Ampliación de NTC60 a NTC120", "04620 04621 04628 04629 04630 04638 04639", "", "", "", "26/6/2026"], ["Z14", "3563", "PLAYA DE LA ATUNARA", "La Línea de la Concepción", "Cádiz", "Ampliación de NTC60 a NTC90", "11300 11313 11314 11315", "", "", "", "3/7/2026"], ["Z11", "3889", "CALA MILLOR", "Sant Llorenç des Cardassar", "Illes Balears", "NTC90", "07250 07500 07509 07520 07530 07540 07550 07559 07560 07570 07580 07589 07590 07680 07687", "", "", "", "3/7/2026"], ["Z40", "4429", "AVDA. EUROPA", "Benissa", "Alacant/Alicante", "Ampliación de NTC30 a NTC60", "03727 03728 03729 03759 03760 03769 03770 03778 03779 03790 03795", "", "", "", "3/7/2026"], ["Z30", "4655", "REPÚBLICA ARXENTINA", "Marín", "Pontevedra", "Ampliación de NTC30 a NTC60", "36001 36002 36003 36004 36005 36143 36153 36156 36160 36161 36162 36163 36164 36900 36910 36915 36960 36966 36969 36970 36992 36993 36995", "", "", "", "3/7/2026"], ["Z12", "3885", "PUERTO DEL ROSARIO", "Puerto del Rosario", "Las Palmas", "Ampliación de NTC90 a NTC120", "35600 35610 35612 35649 35660", "", "", "", "10/7/2026"], ["Z49", "3964", "P. C. CAMINO REAL", "San Fernando de Henares", "Madrid", "", "", "", "", "10/7/2026", ""], ["Z12", "4256", "PLAYA HONDA", "San Bartolomé", "Las Palmas", "NTC30", "35507 35508 35550 35559 35572", "", "", "", "10/7/2026"], ["Z43", "4483", "CIEMPOZUELOS", "Ciempozuelos", "Madrid", "Bajada de NTC120 a NTC90", "45222 45223 45224 45240 45290 45291 45300 45311 45312 45340 45350", "", "", "", "10/7/2026"], ["Z28", "4570", "VECINDARIO", "Santa Lucía de Tirajana", "Las Palmas", "Ampliación de NTC90 a NTC120", "35100 35107 35110 35119", "", "", "", "10/7/2026"], ["Z43", "4637", "C/ TOLEDO", "Parla", "Madrid", "", "", "", "", "10/7/2026", ""], ["Z28", "4677", "SANTIDAD", "Arucas", "Las Palmas", "Ampliación de NTC90 a NTC120", "35400 35411 35412 35413 35414 35415 35420 35422 35423 35430 35431 35432 35450 35458 35460 35469 35480 35488", "", "", "", "10/7/2026"], ["Z28", "4745", "TAMARANA", "Las Palmas de Gran Canaria", "Las Palmas", "Ampliación de NTC90 a NTC120", "35017 35018 35200 35210 35213 35218 35220 35229 35300 35307 35308 35310 35319", "", "", "", "10/7/2026"], ["Z23", "2382", "EDUARDO SAAVEDRA", "Soria", "Soria", "Ampliación de NTC30 a NTC60", "42001 42002 42003 42004 42005 42162 42190 42191", "", "", "", "17/7/2026"], ["Z41", "3681", "AVDA. DE LOS CIPRESES", "Salamanca", "Salamanca", "Ampliación de NTC60 a NTC90", "37001 37002 37003 37004 37005 37184 37185 37189 37193 37350 37430 37439 37798", "", "", "", "17/7/2026"], ["Z07", "4405", "ESCAPARATE", "Puertollano", "Ciudad Real", "NTC30", "13440 13500 13580", "", "", "", "17/7/2026"], ["Z41", "4673", "VISTA ALEGRE", "Zamora", "Zamora", "Ampliación de NTC30 a NTC60", "49001 49002 49003 49004 49005 49006 49007 49008 49009 49010 49011 49012 49013 49014 49015 49016 49017 49018 49019 49020 49021 49022 49023 49024 49025 49026 49027 49028 49029 49030 49031 49032 49121 49150 49151 49159 49190 49191 49192 49530", "", "", "", "17/7/2026"], ["Z41", "4785", "VISTAHERMOSA", "Aldeatejada", "Salamanca", "Ampliación de NTC60 a NTC90", "37006 37007 37008 37009 37120 37129 37181 37187 37188 37190 37191 37192 37194 37796 37882 37900", "", "", "", "17/7/2026"], ["Z24", "2004", "C. C. PONT DE LA BARCA", "Girona", "Girona", "", "", "", "", "9/8/2026", ""], ["Z24", "3943", "C/ PAU CASALS", "Girona", "Girona", "Ampliación de NTC60 a NTC120", "17001 17002 17004 17006 17007 17118 17120 17121 17150 17199 17242 17460 17461 17462 17463 17464 17465 17468 17481 17482 17820 17831 17832 17833 17834 17840 17843 17844 17846 17852", "", "", "", "9/8/2026"], ["Z24", "3951", "BELL-LLOC", "Girona", "Girona", "Ampliación de NTC60 a NTC90", "17003 17005 17100 17116 17160 17162 17164 17180 17181 17182 17183 17184 17185 17190 17241 17243 17244 17430 17441 17456 17457 17458 17459", "", "", "", "9/8/2026"], ["Z12", "3902", "ARGANA", "Arrecife", "Las Palmas", "", "", "", "", "16/8/2026", ""], ["Z12", "4256", "PLAYA HONDA", "San Bartolomé", "Las Palmas", "Ampliación de NTC30 a NTC120", "35500 35507 35508 35509 35510 35550 35559 35571 35572", "", "", "", "16/8/2026"], ["Z23", "3118", "AGUAS VIVAS", "Guadalajara", "Guadalajara", "Ampliación de NTC30 a NTC60", "19001 19003 19005 19139 19140 19150 19163 19193 19198 19290", "", "", "", "21/8/2026"], ["Z52", "4230", "POL. ITURRONDO", "Burlada/Burlata", "Navarra", "Ampliación de NTC60 a NTC90", "31004 31005 31006 31015 31016 31110 31119 31192 31194 31486 31600 31610 31620 31621 31699", "", "", "", "21/8/2026"], ["Z21", "2343", "PROLONGACIÓN ÁNGEL BRUNA", "Cartagena", "Murcia", "Bajada de NTC150 a NTC60", "30201 30202 30203 30204 30300 30351 30392 30399", "", "", "", "24/8/2026"], ["Z40", "2465", "PASEO SALADAR", "Dénia", "Alacant/Alicante", "Bajada de NTC120 a NTC60", "03700 03709 03750", "", "", "", "24/8/2026"], ["Z13", "2875", "C/ MESTRE SERRANO", "Benicarló", "Castelló/Castellón", "Bajada de NTC90 a NTC30", "12500 12580 12589 12598", "", "", "", "24/8/2026"], ["Z14", "3734", "SOTOGRANDE", "San Roque", "Cádiz", "Bajada de NTC120 a NTC60", "11310 11311 11312 11316 11340 29691 29692", "", "", "", "24/8/2026"], ["Z18", "3905", "SAN CRISTÓBAL", "Almuñécar", "Granada", "Bajada de NTC120 a NTC60", "18690 18697", "", "", "", "24/8/2026"], ["Z25", "3919", "CAMPOHERMOSO", "Níjar", "Almería", "Bajada de NTC90 a NTC30", "04100 04110 04115 04116 04117 04118 04150 04151", "", "", "", "24/8/2026"], ["Z18", "4311", "P. C. MOTRIL", "Motril", "Granada", "Bajada de NTC120 a NTC60", "18600 18610 18611 18613 18680 18720 18730", "", "", "", "24/8/2026"], ["Z25", "4410", "AVDA. PRÍNCIPE DE ESPAÑA", "El Ejido", "Almería", "Bajada de NTC120 a NTC90", "04700 04710 04711 04713 04716 04717 04720 04721 04727 04738 04740 04741 04743 04745 04746 04750 04760 04769 04770 04778 04779", "", "", "", "24/8/2026"], ["Z40", "4429", "AVDA. EUROPA", "Benissa", "Alacant/Alicante", "Bajada de NTC60 a NTC30", "03727 03728 03729 03759 03760 03769 03770 03778 03779 03790 03795", "", "", "", "24/8/2026"], ["Z21", "4456", "LA MANGA", "Cartagena", "Murcia", "Bajada de NTC30 a NTC15", "30370 30380.2 30380.3 30380.4 30384 30385 30389", "", "", "", "24/8/2026"], ["Z48", "4476", "VERA PUEBLO", "Vera", "Almería", "Bajada de NTC120 a NTC60", "04140 04149 04620 04621 04628 04629 04630 04638 04639", "", "", "", "24/8/2026"], ["Z30", "4655", "REPÚBLICA ARXENTINA", "Marín", "Pontevedra", "Bajada de NTC60 a NTC30", "36001 36002 36003 36004 36005 36143 36153 36156 36160 36161 36162 36163 36164 36900 36910 36915 36960 36966 36969 36970 36992 36993 36995", "", "", "", "24/8/2026"], ["Z48", "4771", "FUENTE ÁLAMO", "Fuente Álamo de Murcia", "Murcia", "Bajada de NTC120 a NTC60", "30205 30310 30319 30320 30333 30334 30393 30394 30396 30860 30868 30870 30875 30876 30877 30879", "", "", "", "24/8/2026"], ["Z21", "4777", "C. C. LA RAMBLA", "Cartagena", "Murcia", "Bajada de NTC150 a NTC60", "30360 30364 30366 30368 30369 30382 30383 30395 30593 30594 30700 30710", "", "", "", "24/8/2026"], ["Z02", "2207", "C/ NÁPOLES", "Barberà del Vallès", "Barcelona", "Ampliación de NTC90 a NTC120", "08130 08204 08210 08213 08291", "", "", "", "28/8/2026"], ["Z36", "3413", "LES PLANES", "Sant Joan Despí", "Barcelona", "NTC90", "08980", "", "", "", "28/8/2026"], ["Z20", "4153", "SANT FOST", "Sant Fost de Campsentelles", "Barcelona", "Ampliación de NTC60 a NTC120", "08100 08105 08106 08107 08150 08915 08916", "", "", "", "28/8/2026"], ["Z52", "4258", "TAFALLA", "Tafalla", "Navarra", "NTC15", "31131 31132 31140 31178 31200 31208 31240 31241 31262 31263 31290 31300 31390 31393 31394 31395 31495", "", "", "", "28/8/2026"], ["Z42", "4697", "ZARAMAGA", "Vitoria-Gasteiz", "Araba/Álava", "Ampliación de NTC60 a NTC90", "01001 01002 01003 01004 01005 01006 01009 01012 01013 01192 01193 01194", "", "", "", "28/8/2026"], ["Z45", "2762", "VIRGEN DEL LOSAR", "Sagunt/Sagunto", "València/Valencia", "Bajada de NTC120 a NTC90", "46148 46149 46500 46501 46520 46529 46590 46591 46592 46595", "", "", "", "31/8/2026"], ["Z05", "3860", "CUBELLES", "Cubelles", "Barcelona", "Bajada de NTC90 a NTC60", "08729 43881 43882", "", "", "", "31/8/2026"], ["Z24", "4033", "LLORET", "Lloret de Mar", "Girona", "Bajada de NTC90 a NTC60", "17310 17320", "", "", "", "31/8/2026"], ["Z24", "4113", "CASSÀ", "Cassà de la Selva", "Girona", "Bajada de NTC90 a NTC60", "17220 17230 17240 17245 17246 17248 17249 17250 17251 17252", "", "", "", "31/8/2026"], ["Z24", "4313", "LA BISBAL", "La Bisbal d'Empordà", "Girona", "Bajada de NTC120 a NTC60", "17110 17111 17113 17114 17115 17123 17124 17130 17131 17132 17133 17134 17136 17137 17140 17141 17142 17200 17210 17211 17212 17213 17214 17253 17255 17256 17257 17258", "", "", "", "31/8/2026"], ["Z28", "4377", "PUERTO RICO", "Mogán", "Las Palmas", "Bajada de NTC90 a NTC60", "35120 35128 35129 35130 35138 35139 35140 35149", "", "", "", "31/8/2026"], ["Z45", "4385", "CTRA. DE ONDA", "Vila-real", "Castelló/Castellón", "Bajada de NTC90 a NTC30", "12200 12220 12540", "", "", "", "31/8/2026"], ["Z13", "4425", "C. C. ESTEPARK", "Castelló de la Plana", "Castelló/Castellón", "Bajada de NTC60 a NTC30", "12003 12005 12100", "", "", "", "31/8/2026"], ["Z45", "4472", "AVDA. EUROPA", "la Vall d'Uixó", "Castelló/Castellón", "Bajada de NTC120 a NTC90", "12520 12526 12529 12530 12539 12549 12550 12590 12591 12592 12593 12600 12609 46510 46511 46512 46513 46514 46515 46593 46594", "", "", "", "31/8/2026"], ["Z13", "4558", "AVDA. CASTELLÓN", "Almassora", "Castelló/Castellón", "Bajada de NTC120 a NTC90", "12001 12002 12004 12006 12110 12130 12190 12560 12594", "", "", "", "31/8/2026"], ["Z26", "3700", "BARBATE", "Barbate", "Cádiz", "Bajada de NTC120 a NTC30", "11140 11159 11160 11393", "", "", "", "7/9/2026"], ["Z24", "3725", "EMPURIA BRAVA", "Castelló d'Empúries", "Girona", "Bajada de NTC90 a NTC60", "17480 17486 17487 17488 17489 17490 17493 17494 17495", "", "", "", "7/9/2026"], ["Z05", "3950", "MORA D'EBRE", "Móra d'Ebre", "Tarragona", "Bajada de NTC60 a NTC30", "43320 43513 43730 43736 43740 43746 43747 43748 43749 43750 43770 43775 43776 43791 43792 43860", "", "", "", "7/9/2026"], ["Z05", "3975", "COMA-RUGA", "El Vendrell", "Tarragona", "Bajada de NTC90 a NTC60", "43700 43719 43820 43880", "", "", "", "7/9/2026"], ["Z05", "4423", "L'ALFORJA", "Cambrils", "Tarragona", "Bajada de NTC90 a NTC60", "43300 43340 43391 43771 43850 43890 43891 43892", "", "", "", "7/9/2026"], ["Z46", "4443", "P. C. LEPESUR", "Lepe", "Huelva", "Bajada de NTC90 a NTC60", "21400 21409 21410 21420 21430 21431 21440 21449 21450 21459 21500", "", "", "", "7/9/2026"], ["Z26", "4705", "CTRA. DE CHIPIONA", "Sanlúcar de Barrameda", "Cádiz", "Bajada de NTC90 a NTC30", "11520 11540 11549 11550", "", "", "", "7/9/2026"], ["Z05", "4708", "EL PALLOL", "Reus", "Tarragona", "Bajada de NTC60 a NTC30", "43201 43205", "", "", "", "7/9/2026"], ["Z30", "4140", "AVDA. MADRID 108", "Vigo", "Pontevedra", "Ampliación de NTC90 a NTC120", "36200 36201 36202 36203 36204 36205 36206 36207 36208 36209 36210 36211 36212 36213 36214 36215 36216 36300 36310 36312 36313 36314 36315 36316 36317 36318 36320 36330 36331 36340 36350 36360 36370 36378 36379 36380 36389 36390 36391 36392 36393 36400 36416 36419 36800 36811 36812 36814 36815 36816", "", "", "", "11/9/2026"], ["Z42", "4281", "BASAURI", "Basauri", "Bizkaia", "Ampliación de NTC90 a NTC120", "48003 48005 48006 48008 48010 48011 48012 48480 48490 48970", "", "", "", "11/9/2026"], ["Z42", "4382", "GERNIKA", "Gernika-Lumo", "Bizkaia", "NTC15", "48300 48309 48350 48360 48370 48395", "", "", "", "11/9/2026"], ["Z42", "4639", "IURRETA", "Iurreta", "Bizkaia", "NTC15", "48140 48200 48212 48215 48220 48230 48240 48249 48250 48260 48269 48291 48330 48340 48390", "", "", "", "11/9/2026"], ["Z54", "2549", "PLAYA LAS AMÉRICAS", "Adeje", "Santa Cruz de Tenerife", "Apertura tras reforma NTC60", "38630 38631 38632", "", "", "", "13/10/2026"], ["Z54", "4237", "PUERTO SANTIAGO", "Santiago del Teide", "Santa Cruz de Tenerife", "Bajada de NTC60 a NTC30", "38435 38460 38470 38479 38480 38680 38683 38684 38686 38690", "", "", "", "13/10/2026"], ["Z24", "2829", "ESTACIÓ D'AUTOBUSSOS", "Figueres", "Girona", "", "", "", "", "15/11/2026", ""], ["Z24", "4851", "VILATENIM", "Figueres", "Girona", "NTC60", "17467 17469 17470 17472 17473 17474 17475 17476 17484 17485 17492 17600 17770 17771", "", "", "", "15/11/2026"], ["Z28", "3749", "GALDAR SAN ISIDRO", "Gáldar", "Las Palmas", "NTC30", "35450 35460 35469 35480 35488", "", "", "", "27/11/2026"], ["Z12", "3902", "ARGANA", "Arrecife", "Las Palmas", "Apertura tras reforma NTC90", "35500 35509 35510 35571", "", "", "", "27/11/2026"], ["Z12", "4256", "PLAYA HONDA", "San Bartolomé", "Las Palmas", "Bajada de NTC120 a NTC30", "35507 35508 35550 35559 35572", "", "", "", "27/11/2026"], ["Z28", "4745", "TAMARANA", "Las Palmas de Gran Canaria", "Las Palmas", "Bajada de NTC120 a NTC90", "35017 35200 35210 35213 35218 35220 35229 35300 35307 35308 35310 35319", "", "", "", "27/11/2026"], ["Z51", "4849", "C/ SAN FRANCISCO", "Aranda de Duero", "Burgos", "NTC15", "09370 09391 09400 09443 09450 09454 09471 09491", "", "", "", "27/11/2026"]];
+let datosBinId = localStorage.getItem('qcc_datos_bin_2026') || null;
+
+/* ──────────────────────────────────────────────────────────────
+   QCC_DATA: precarga histórica de "Tiendas que dejan TC" y "Fecha
+   formación". Reclaveada por Centro+Escenario+Fecha 1er servicio
+   (o Cierre servicio si no hay 1er servicio) para que cada
+   movimiento de un mismo centro (p.ej. una ampliación y su bajada
+   posterior) tenga su propio dato y no se mezclen entre sí.
+   ────────────────────────────────────────────────────────────── */
+const QCC_DATA = {"2129||NTC15||13/2/2026": {"tc": "", "formacion": "3/2/2026"}, "2343||Ampliación de NTC60 a NTC150||29/5/2026": {"tc": "", "formacion": "26/5/2026"}, "2465||Ampliación de NTC60 a NTC120||19/6/2026": {"tc": "", "formacion": "15/6/2026"}, "2528||Ampliación de NTC90 a NTC150||16/1/2026": {"tc": "", "formacion": "13/1/2026"}, "2623||Ampliación de NTC30 a NTC60||13/2/2026": {"tc": "", "formacion": "10/2/2026"}, "2717||Ampliación de NTC120 a NTC150||30/1/2026": {"tc": "", "formacion": "27/1/2026"}, "2762||Ampliación de NTC90 a NTC120||19/6/2026": {"tc": "", "formacion": "15/6/2026"}, "2875||Ampliación de NTC30 a NTC90||12/6/2026": {"tc": "", "formacion": "8/6/2026"}, "2946||NTC15||20/3/2026": {"tc": "C-4595 Avda. Montearenas (Ponferrada, León)\nC-2281 Bembibre (Bembibre, León)", "formacion": "10/3/2026"}, "3087||Ampliación de NTC90 a NTC120||27/2/2026": {"tc": "", "formacion": "24/2/2026"}, "3280||Ampliación de NTC120 a NTC150||13/3/2026": {"tc": "", "formacion": "10/3/2026"}, "3410||NTC120||23/1/2026": {"tc": "", "formacion": "8/1/2026"}, "3563||Ampliación de NTC60 a NTC90||3/7/2026": {"tc": "", "formacion": "29/6/2026"}, "3571||NTC60||20/2/2026": {"tc": "", "formacion": "11/2/2026"}, "3632||NTC30||27/3/2026": {"tc": "C-4355 Calatayud (Calatayud, Zaragoza)", "formacion": "19/3/2026"}, "3664||Ampliación de NTC90 a NTC120||16/1/2026": {"tc": "", "formacion": "13/1/2026"}, "3669||NTC30||20/3/2026": {"tc": "C-3910 Avda. de Oviedo (Torrelavega, Cantabria)", "formacion": "11/3/2026"}, "3697||Ampliación de NTC60 a NTC90||6/3/2026": {"tc": "", "formacion": "3/3/2026"}, "3700||Ampliación de NTC30 a NTC120||5/6/2026": {"tc": "", "formacion": "2/6/2026"}, "3725||Ampliación de NTC60 a NTC90||19/6/2026": {"tc": "", "formacion": "15/6/2026"}, "3734||Ampliación de NTC60 a NTC120||5/6/2026": {"tc": "", "formacion": "2/6/2026"}, "3758||NTC30||20/3/2026": {"tc": "C-4395 Villaviciosa (Villaviciosa, Asturias)\nC-3282 Pola de Siero (Pola de Siero, Asturias)\nC-3799 Arriondas (Parres, Asturias)\nC-2363 La Pomar (Langreo, Asturias)", "formacion": "12/3/2026"}, "3769||NTC60||27/2/2026": {"tc": "", "formacion": "17/2/2026"}, "3775||NTC90||15/5/2026": {"tc": "", "formacion": "28/4/2026"}, "3836||Ampliación de NTC30 a NTC60||13/3/2026": {"tc": "", "formacion": "10/3/2026"}, "3850||Ampliación de NTC30 a NTC60||27/2/2026": {"tc": "", "formacion": "24/2/2026"}, "3860||Ampliación de NTC60 a NTC90||15/5/2026": {"tc": "", "formacion": "12/5/2026"}, "3889||NTC90||3/7/2026": {"tc": "C-3897 Cala Ratjada\nC-2603 Ramon Llull\nC-3298 Paseo Estacin", "formacion": "16/6/2026"}, "3905||Ampliación de NTC60 a NTC120||5/6/2026": {"tc": "", "formacion": "2/6/2026"}, "3924||NTC90||30/1/2026": {"tc": "C-3971 Cós de Gràcia (Maó, Illes Balears)", "formacion": "13/1/2026"}, "3930||Ampliación de NTC30 a NTC60||10/4/2026": {"tc": "", "formacion": "7/4/2026"}, "3943||NTC60||27/2/2026": {"tc": "", "formacion": "17/2/2026"}, "3945||NTC30||22/3/2026": {"tc": "", "formacion": "12/3/2026"}, "3950||Ampliación de NTC15 a NTC60||22/5/2026": {"tc": "", "formacion": "19/5/2026"}, "3968||Ampliación de NTC120 a NTC150||13/2/2026": {"tc": "C-4584 Huétor Tájar (Huétor Tájar, Granada)", "formacion": "10/2/2026"}, "3975||Ampliación de NTC30 a NTC90||22/5/2026": {"tc": "", "formacion": "19/5/2026"}, "3992||NTC60||30/1/2026": {"tc": "", "formacion": "20/1/2026"}, "4028||Ampliación de NTC30 a NTC60||13/2/2026": {"tc": "", "formacion": "10/2/2026"}, "4030||Ampliación de NTC90 a NTC120||6/3/2026": {"tc": "", "formacion": "3/3/2026"}, "4033||Ampliación de NTC30 a NTC90||24/4/2026": {"tc": "", "formacion": "21/4/2026"}, "4088||NTC30||10/4/2026": {"tc": "C-4096 Binéfar (Binéfar, Huesca)\nC-4707 Fraga (Fraga, Huesca)", "formacion": "24/3/2026"}, "4113||Ampliación de NTC60 a NTC90||19/6/2026": {"tc": "", "formacion": "15/6/2026"}, "4137||NTC60||24/4/2026": {"tc": "", "formacion": "7/4/2026"}, "4154||NTC60||13/2/2026": {"tc": "", "formacion": "3/2/2026"}, "4232||NTC90||24/4/2026": {"tc": "C-4301 Cas Capità (Santa Eulària des Riu, Illes Balears)\nC-3984 Can Burgos (Sant Josep de sa Talaia, Illes Balears)", "formacion": "9/4/2026"}, "4237||NTC60||7/6/2026": {"tc": "", "formacion": "26/5/2026"}, "4242||NTC60||17/4/2026": {"tc": "C-4767 Cala D'or (Santanyí, Illes Balears)\nC-3461 Llucmajor (Llucmajor, Illes Balears)", "formacion": "7/4/2026"}, "4253||NTC90||8/5/2026": {"tc": "", "formacion": "30/4/2026"}, "4271||NTC30||20/2/2026": {"tc": "C-2066 C/ Lagunilla (Andújar, Jaén)", "formacion": "10/2/2026"}, "4294||Ampliación de NTC60 a NTC90||6/3/2026": {"tc": "", "formacion": "24/2/2026"}, "4311||Ampliación de NTC60 a NTC120||5/6/2026": {"tc": "", "formacion": "2/6/2026"}, "4338||NTC30||10/4/2026": {"tc": "", "formacion": "31/3/2026"}, "4353||NTC15||27/2/2026": {"tc": "C-4589 Peñarroya (Peñarroya-Pueblonuevo, Córdoba)", "formacion": "18/2/2026"}, "4385||Ampliación de NTC30 a NTC90||12/6/2026": {"tc": "", "formacion": "8/6/2026"}, "4402||Ampliación de NTC90 a NTC120||23/1/2026": {"tc": "", "formacion": "20/1/2026"}, "4410||Ampliación de NTC60 a NTC90||6/2/2026": {"tc": "", "formacion": "3/2/2026"}, "4425||Ampliación de NTC30 a NTC60||12/6/2026": {"tc": "", "formacion": "8/6/2026"}, "4429||Ampliación de NTC30 a NTC60||3/7/2026": {"tc": "", "formacion": "29/6/2026"}, "4434||Ampliación de NTC60 a NTC90||13/3/2026": {"tc": "", "formacion": "10/3/2026"}, "4436||Ampliación de NTC120 a NTC150||30/1/2026": {"tc": "", "formacion": "27/1/2026"}, "4443||Ampliación de NTC60 a NTC90||15/5/2026": {"tc": "", "formacion": "12/5/2026"}, "4471||Ampliación de NTC30 a NTC60||6/3/2026": {"tc": "", "formacion": "3/3/2026"}, "4472||Ampliación de NTC90 a NTC120||19/6/2026": {"tc": "", "formacion": "15/6/2026"}, "4483||Ampliación de NTC90 a NTC120||23/1/2026": {"tc": "", "formacion": "20/1/2026"}, "4509||NTC30||27/3/2026": {"tc": "C-3812 Jaca (Jaca, Huesca)", "formacion": "17/3/2026"}, "4519||NTC60||17/4/2026": {"tc": "", "formacion": "8/4/2026"}, "4526||NTC15||10/4/2026": {"tc": "C-4121 Solsona (Solsona, Lleida)\nC-4117 (Cervera, Lleida)\nC-3960 (Balaguer, Lleida)", "formacion": "31/3/2026"}, "4544||Ampliación de NTC120 a NTC150||20/2/2026": {"tc": "", "formacion": "17/2/2026"}, "4556||Ampliación de NTC30 a NTC60||23/1/2026": {"tc": "", "formacion": "20/1/2026"}, "4558||Ampliación de NTC90 a NTC120||12/6/2026": {"tc": "", "formacion": "8/6/2026"}, "4562||Ampliación de NTC60 a NTC90||13/3/2026": {"tc": "", "formacion": "10/3/2026"}, "4569||Ampliación de NTC30 a NTC60||27/3/2026": {"tc": "C-4096 Binéfar (Binéfar, Huesca)\nC-4707 Fraga (Fraga, Huesca)", "formacion": "24/3/2026"}, "4582||NTC60||17/4/2026": {"tc": "C-3258 Coll D'en Rabassa (Palma, Illes Balears)\nC-2373 La Ribera (Palma, Illes Balears)\nC-2158 Avda. América (Palma, Illes Balears)\nC-3245 Arenal Park (Llucmajor, Illes Balears)", "formacion": "9/4/2026"}, "4587||Ampliación de NTC60 a NTC90||27/3/2026": {"tc": "", "formacion": "24/3/2026"}, "4606||Ampliación de NTC30 a NTC60||27/3/2026": {"tc": "", "formacion": "24/3/2026"}, "4623||Ampliación de NTC60 a NTC90||6/2/2026": {"tc": "", "formacion": "3/2/2026"}, "4631||NTC30||13/3/2026": {"tc": "", "formacion": "3/3/2026"}, "4632||Ampliación de NTC30 a NTC60||6/2/2026": {"tc": "", "formacion": "3/2/2026"}, "4655||Ampliación de NTC30 a NTC60||3/7/2026": {"tc": "", "formacion": "29/6/2026"}, "4678||NTC60||20/2/2026": {"tc": "C-2095 Ubrique (Ubrique, Cádiz)", "formacion": "10/2/2026"}, "4687||Ampliación de NTC90 a NTC120||16/1/2026": {"tc": "", "formacion": "13/1/2026"}, "4701||Ampliación de NTC90 a NTC120||6/2/2026": {"tc": "", "formacion": "3/2/2026"}, "4705||NTC90||5/6/2026": {"tc": "", "formacion": "19/5/2026"}, "4708||NTC60||12/4/2026": {"tc": "", "formacion": "25/3/2026"}, "4744||NTC90||16/1/2026": {"tc": "", "formacion": "8/1/2026"}, "4745||NTC90||6/2/2026": {"tc": "", "formacion": "22/1/2026"}, "4766||Ampliación de NTC30 a NTC60||15/5/2026": {"tc": "", "formacion": "12/5/2026"}, "4771||Ampliación de NTC30 a NTC120||29/5/2026": {"tc": "", "formacion": "26/5/2026"}, "4777||Ampliación de NTC60 a NTC150||29/5/2026": {"tc": "", "formacion": "26/5/2026"}, "4778||NTC30||20/3/2026": {"tc": "C-3979 Bº El Callejo (Laredo, Cantabria)", "formacion": "10/3/2026"}, "4781||NTC90||24/4/2026": {"tc": "C-2704 C/ Pollentia (Alcúdia, Illes Balears)\nC-2674 Can Picafort (Santa Margalida, Illes Balears)\nC-2152 Avda. General Luque (Inca, Illes Balears)\nC-4781 San Pobla (Sa Pobla, Illes Balears)", "formacion": "8/4/2026"}, "4804||NTC60||6/3/2026": {"tc": "", "formacion": "24/2/2026"}};
+
+let allRows = [];
+let editableData = {};
+let searchCP = '';
+let saveTimeout = null;
+let sortCol = null;
+let sortDir = 1;
+
+/* Clave única de fila: Centro + Escenario + Fecha 1er servicio
+   (con fallback a Fecha de cierre servicio si no hay 1er servicio,
+   caso de las filas de "cierre" sin escenario ni 1er servicio).
+   Así, dos movimientos del mismo centro (p.ej. ampliación y bajada
+   posterior) SIEMPRE tienen claves distintas y sus campos editables
+   (Fecha formación, Tiendas que dejan TC) no se comparten entre sí. */
+function rowKey(r) {
+  return [r[1]||'', r[5]||'', (r[10]||r[9]||'')].join('||');
 }
 
-// Returns set of week-keys that should be highlighted right now
-// Logic: for each "active cycle" (month objectives currently in planning),
-// find which planning week contains today and return its key.
-// Active cycles: any month M where M-2 or M-1 overlaps with current date.
-function getActiveWeekKeys() {
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  const active = new Set();
+/* Clave antigua (solo Centro + una fecha), usada hasta ahora.
+   Se mantiene aquí únicamente para poder migrar automáticamente
+   los datos ya guardados en JSONBin a la nueva clave. */
+function oldRowKey(r) {
+  return (r[1]||'') + '_' + ((r[9]||'') || (r[10]||''));
+}
 
-  // Check cycles for target months: current-1, current, current+1, current+2
-  // (covers all possible overlaps)
-  for (let delta = -1; delta <= 3; delta++) {
-    const targetDate = new Date(today.getFullYear(), today.getMonth() + delta, 1);
-    const tYear = targetDate.getFullYear();
-    const tMonth = targetDate.getMonth(); // 0-based
+/* Migra en memoria los edits guardados con la clave antigua a la
+   nueva clave (Centro+Escenario+Fecha). No se pierde ningún dato
+   ya introducido: simplemente se re-etiqueta con la clave correcta.
+   Devuelve true si hizo algún cambio (para forzar un guardado). */
+function migrateOldKeys(rows) {
+  let changed = false;
+  rows.forEach(r => {
+    const ok = oldRowKey(r);
+    const nk = rowKey(r);
+    if (ok !== nk && editableData.hasOwnProperty(ok) && !editableData.hasOwnProperty(nk)) {
+      editableData[nk] = editableData[ok];
+      delete editableData[ok];
+      changed = true;
+    }
+  });
+  return changed;
+}
 
-    WEEKS.forEach(w => {
-      const refMonth = (tMonth + w.mOffset + 12) % 12;
-      const refYear = tYear + Math.floor((tMonth + w.mOffset) / 12) +
-                      (tMonth + w.mOffset < 0 ? 1 : 0) +
-                      (tMonth + w.mOffset < -12 ? 1 : 0);
+function setSyncStatus(state, msg) {
+  const el = document.getElementById('syncStatus');
+  el.className = 'sync-status sync-' + state;
+  el.textContent = msg;
+}
 
-      // Correct year calculation
-      const absMonth = tMonth + w.mOffset;
-      const corrYear = tYear + Math.floor(absMonth / 12) - (absMonth < 0 && absMonth % 12 !== 0 ? 0 : 0);
-      // Simpler: just use Date arithmetic
-      const refDate = new Date(tYear, tMonth + w.mOffset, 1);
-      const rY = refDate.getFullYear();
-      const rM = refDate.getMonth();
-
-      const mondays = [];
-      for (let i = 0; i < 6; i++) {
-        const m = nthMonday(rY, rM, i);
-        if (m.getMonth() === rM) mondays.push(m);
-      }
-
-      if (w.weekIdx >= mondays.length) return;
-      const weekStart = mondays[w.weekIdx];
-      const weekEnd = new Date(weekStart);
-      weekEnd.setDate(weekEnd.getDate() + 6);
-
-      if (today >= weekStart && today <= weekEnd) {
-        active.add(w.key);
-      }
+async function loadEditsFromDrive() {
+  setSyncStatus('loading', 'Cargando edits...');
+  try {
+    const res = await fetch(JSONBIN_EDITS_URL + '/latest', {
+      headers: { 'X-Master-Key': JSONBIN_KEY }
     });
+    const json = await res.json();
+    const data = json.record || {};
+    editableData = data._init ? {} : data;
+    setSyncStatus('ok', 'Sincronizado con JSONBin');
+    return true;
+  } catch(e) {
+    setSyncStatus('err', 'Sin conexión — edits solo locales');
+    try { editableData = JSON.parse(localStorage.getItem('qcc_edits_2026') || '{}'); } catch(e2) {}
+    return false;
   }
-  return active;
 }
 
-const ACTIVE_WEEK_KEYS = getActiveWeekKeys();
-
-// Estructura fija de partida. Las tareas añadidas desde "+ Nueva tarea"
-// (CUSTOM_TASKS) se fusionan encima de esta base en rebuildAreas().
-const BASE_AREAS = [
-  {
-    id:'centros', label:'Gestión\nCentros', color:'teal',
-    tasks:{
-      s1m2:[{id:'qcc',   title:'Crear QCC',                   icon:'ti-file-plus',  week:'Sem 1 · M-2'}],
-      s3m2:[{id:'nsd',   title:'Analizar NSD',                icon:'ti-chart-line', week:'Sem 3 · M-2'},
-            {id:'cmo',   title:'Curar Centros MO',            icon:'ti-building-store',week:'Sem 3 · M-2'}],
-      s4m2:[{id:'cdm',   title:'Informar Cambios CdM',        icon:'ti-mail',       week:'Sem 4 · M-2'}],
-      s5m2:[{id:'bote',  title:'Curar Bote Centros',          icon:'ti-checklist',  week:'Sem 5 · M-2'}],
-      s1m1:[{id:'ccpp',  title:'Mandar Correo Cambios CCPP',  icon:'ti-send',       week:'Sem 1 · M-1'}],
-    }
-  },
-  {
-    id:'oferta', label:'Gestión\nOferta', color:'blue',
-    tasks:{
-      s5m2:[{id:'propventa',title:'Validar Propuesta Venta',  icon:'ti-circle-check',week:'Sem 5 · M-2'}],
-      s1m1:[{id:'planif',   title:'Enviar Planificaciones',   icon:'ti-send',       week:'Sem 1 · M-1'}],
-    }
-  }
-];
-
-// AREAS y TASK_MAP se reconstruyen (rebuildAreas) cada vez que cambian
-// los datos o se añade/borra una tarea personalizada.
-let AREAS = [];
-let TASK_MAP = {};
-
-function rebuildAreas() {
-  AREAS = BASE_AREAS.map(a => ({
-    ...a,
-    tasks: Object.fromEntries(Object.entries(a.tasks).map(([k,v]) => [k, v.map(t => ({...t}))]))
-  }));
-
-  (CUSTOM_TASKS || []).forEach(ct => {
-    const area = AREAS.find(a => a.id === ct.areaId);
-    if (!area) return;
-    if (!area.tasks[ct.weekKey]) area.tasks[ct.weekKey] = [];
-    const w = WEEKS.find(w => w.key === ct.weekKey);
-    area.tasks[ct.weekKey].push({
-      id: ct.id,
-      title: ct.title,
-      icon: ct.icon || 'ti-list',
-      week: w ? `${w.label} · ${w.fase}` : '',
-      custom: true
+async function saveEditsToDrive() {
+  setSyncStatus('loading', 'Guardando...');
+  localStorage.setItem('qcc_edits_2026', JSON.stringify(editableData));
+  try {
+    const res = await fetch(JSONBIN_EDITS_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': JSONBIN_KEY
+      },
+      body: JSON.stringify(editableData)
     });
-  });
-
-  TASK_MAP = {};
-  AREAS.forEach(a => {
-    Object.values(a.tasks).forEach(arr => arr.forEach(t => {
-      TASK_MAP[t.id] = { ...t, areaColor: a.color, areaLabel: a.label.replace('\n',' ') };
-    }));
-  });
-
-  (EVENTUAL_TASKS || []).forEach(et => {
-    const area = AREAS.find(a => a.id === et.areaId);
-    if (!area) return;
-    TASK_MAP[et.id] = {
-      id: et.id,
-      title: et.title,
-      icon: et.icon || 'ti-list',
-      week: 'Puntual',
-      areaColor: area.color,
-      areaLabel: area.label.replace('\n',' '),
-      custom: true,
-      eventual: true,
-      done: !!et.done
-    };
-  });
-}
-
-// ══════════════════════════════════════════════════════════════
-// CONFIGURACIÓN JSONBIN
-// Bin ID y Master Key fijados en el código para que la sincronización
-// sea automática (sin prompt). AVISO: esta página es pública en GitHub
-// Pages, así que la Master Key es visible para cualquiera que vea el
-// código fuente de la página.
-// ══════════════════════════════════════════════════════════════
-const JSONBIN_BIN_ID = '6a96a75ef5f4af5e295be1c3';
-const JSONBIN_MASTER_KEY = '$2a$10$GsW07ACS8sONiKeyJhB2N.AlnB2pIIHm.oooBdnE4MYUf18sG/zcy';
-const JSONBIN_CONFIGURED = !!JSONBIN_BIN_ID && !JSONBIN_BIN_ID.startsWith('PON_AQUI');
-
-// Copia de tus tareas actuales, recuperada de tu localStorage anterior.
-// Se usa como respaldo si el bin no está configurado, si falla la conexión,
-// o como semilla la primera vez que sincronices con "Sincronizar".
-const INITIAL_DATA = {
-  "qcc": {
-    "steps": [
-      "Acceder al HTML del QCC de Expansión online",
-      "Actualizar los datos del HTML ejecutando la consulta de metabase y exportando en csv",
-      "Filtrar por mes y descargar en xlsx. Adjuntar por slack al canal Diario de los Colonialistas",
-      "Una vez actualizado por Alberto y Susi, actualizar el HTML, descargar en xlsx y pegar en Drive",
-      "Pasar a Maria la descarga completa para que envíe correo a CdM"
-    ],
-    "links": [
-      {"name": "HTML QCC Expansión online", "url": "https://pepamiron.github.io/QCCExpansion2026/"},
-      {"name": "Consulta Metabase ", "url": "https://metabase.prod.monline/question/32873-qcc-ntc-nsd-2026"},
-      {"name": "Slack", "url": "https://mercadonaonline.slack.com/archives/C0619RLG49Y"},
-      {"name": "Drive", "url": "https://docs.google.com/spreadsheets/d/1JRqWwX28IF2nfpzE6s7CsMkGVSpJ-TirC_vjXmJ2tK0/edit?gid=0#gid=0"}
-    ]
-  },
-  "propventa": {
-    "steps": [
-      "Negocio publica en canal slack las replanificaciones",
-      "Contactar con las tiendas implicadas e informar de los cambios a través de la vista preliminar en los meses afectados",
-      "Rellenar las Subidas Oferta en el Drive de Merca Oferta",
-      "Informar por slack de la cumplimentación"
-    ],
-    "links": [
-      {"name": "Subidas Oferta", "url": "https://docs.google.com/spreadsheets/d/1DhX8natid7bkb3UljV7oIawNYdEyMsxTZC3l8EqvvKE/edit?gid=919618989#gid=919618989"},
-      {"name": "Venta Mo", "url": "https://ventamo.prod.monline/?origin=&month=10&year=2025&day=21"}
-    ]
-  },
-  "planif": {
-    "steps": [
-      "Negocio publica el entregable ",
-      "Abrir el drive y pegar la nueva oferta. Ejecutar Scripts y descargar en pdf",
-      "Abrir enlace envío planificaciones. Pegar las rutas de los pdf descargados y ejecutar envio"
-    ],
-    "links": [
-      {"name": "Drive Planificaciones", "url": "https://docs.google.com/spreadsheets/d/19h8h3Ni8Dq46Ned0wguPYaR305yclw4C2yqGt0Z0mto/edit?gid=2114995375#gid=2114995375"},
-      {"name": "Envio Planificaciones", "url": "C:\\Users\\pmiron\\OneDrive - Mercadona\\Documentos\\Cambios Planificación.xlsm"},
-      {"name": "", "url": "C:\\Users\\pmiron\\OneDrive - Mercadona\\Documents\\Venta y planificación\\generador"}
-    ]
-  },
-  "cmo": {
-    "steps": [
-      "Cargar en centros MO los cambios de CP o de modelo",
-      "Actualizar en Drive las planificaciones realizadas",
-      "Contrastar que los datos de Centros MO y Drive coinciden"
-    ],
-    "links": [
-      {"name": "CentrosMo", "url": "https://centrosmo.prod.monline/centers/vlc1/"},
-      {"name": "Drive planificaciones", "url": "https://docs.google.com/spreadsheets/d/1DgJvulxq9bI_4owljXm-yj3SKVKEs9PL/edit?gid=1858854927#gid=1858854927"},
-      {"name": "Comparador", "url": "https://pepamiron.github.io/COMPARADORES/"}
-    ]
-  },
-  "bote": {
-    "steps": [
-      "Activar el servicio de NTC y NSD de las aperturas",
-      "NTC = fecha inicio mismo día de la apertura y se debe cargar mínimo 15 días antes del 1er día de formación ",
-      "NSD = fecha inicio un día antes de la apertura y se debe cargar mínimo 2 días antes de esa fecha",
-      "En caso de que las tiendas estén activas en TC, avisadles para que carguen la baja"
-    ],
-    "links": [
-      {"name": "Bote Centro", "url": "https://vhmcapfi100lb.sap.mercadona.com/sap/bc/ui2/flp#MDTE0118SemObj-display&/?sap-iapp-state--history=TASV0PLGKKXGZRBCYHOOI4MK15LXWADE8N3XXZYFQ&sap-iapp-state=AS5PK6NZ4GEBJO5BZN0DY21GVS74JAB25XBRYB9A"}
-    ]
-  },
-  "ccpp": {
-    "steps": [
-      "Acceder a la consulta y exportar a Excel",
-      "Enviar por correo"
-    ],
-    "links": [
-      {"name": "Consulta Movimientos", "url": "https://metabase.prod.monline/question/33103-tabla-movimientos-cp-mensuales-para-enviar-por-correo"},
-      {"name": "Guardar excel", "url": "C:\\Users\\pmiron\\OneDrive - Mercadona\\Documents\\Venta y planificación\\Cambios codigos postales"}
-    ]
-  },
-  "cdm": {
-    "steps": [
-      "Acceder a Control de cambios ",
-      "Actualizar los datos por si hubieran cambiado, ejecutando la consulta de metabase",
-      "Seleccionar el mes a informar y solo Tiendas",
-      "Verificar que todos los datos de la tabla son ok",
-      "Exportar a Excel y pegar en Plantilla Envío (PlantillaCorreosNTC.xlxm) en la pestaña  Datos",
-      "Ejecutar la consulta de cambios área reparto del mes a informar y exportar a json. Mover el documento a la ruta del enlace Generar Mapas con nombre mes Mmmm.json",
-      "Desde \"Generar_pdfs.bat\" generar todos los mapas de Área de Servicio del mes a enviar",
-      "Generar las planificaciones anuales del mes a enviar, exportar a pdf y guardar los pdfs en la misma carpeta de los mapas",
-      "Copiar la ruta de los pdf   y pegar en la plantilla de envio, pestaña Datos",
-      "Ejecutar correos. Se generan borradores en Outlook"
-    ],
-    "links": [
-      {"name": "Control de cambios", "url": "https://pepamiron.github.io/control-cambios-ntc/"},
-      {"name": "Consulta Control de cambios", "url": "https://metabase.prod.monline/question/32892-control-de-cambios"},
-      {"name": "Plantilla de Envio", "url": "https://mercadona365-my.sharepoint.com/personal/pmiron_mercadona_es/Documents/Documents/Venta y planificación"},
-      {"name": "Consulta metabese areas reparto", "url": "https://metabase.prod.monline/question/33813-consulta-areas-reparto-para-generar-mapas-pdf?mes=&tipo_centro="},
-      {"name": "Generar Mapas ", "url": "https://mercadona365-my.sharepoint.com/:f:/g/personal/pmiron_mercadona_es/IgB4fHrN9VfCQLSIPodVoSI1Ad13dcco2E0o5UzNcFtbVyY?e=0pjE36"},
-      {"name": "Drive control de cambios", "url": "https://docs.google.com/spreadsheets/d/1pWK-9kQTLQieeBpAr084azxtcuhyO0mc11PNrrQfMMk/edit?gid=0#gid=0"}
-    ]
+    const json = await res.json();
+    if (json.record) {
+      setSyncStatus('ok', 'Guardado ✓');
+      const b = document.getElementById('saved-badge');
+      b.style.display = 'inline-block';
+      clearTimeout(b._t);
+      b._t = setTimeout(() => b.style.display = 'none', 2000);
+    } else throw new Error('Error JSONBin');
+  } catch(e) {
+    setSyncStatus('err', 'Error al guardar — solo local');
   }
-};
-
-const LS_KEY = 'mco_planning_v2';
-
-function loadCachedRaw() {
-  try { const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : null; } catch { return null; }
 }
 
-// Acepta tanto el formato antiguo (objeto plano {taskId: {steps,links}})
-// como el nuevo ({data:{...}, customTasks:[...], eventualTasks:[...]}) —
-// así los bins ya existentes siguen funcionando sin migración manual.
-function normalizePayload(raw) {
-  if (raw && typeof raw === 'object' && ('data' in raw || 'customTasks' in raw || 'eventualTasks' in raw)) {
-    return { data: raw.data || {}, customTasks: raw.customTasks || [], eventualTasks: raw.eventualTasks || [] };
-  }
-  return { data: raw || {}, customTasks: [], eventualTasks: [] };
+function scheduleSave() {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(saveEditsToDrive, 1500);
 }
 
-function cachePayload() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify({ data: DATA, customTasks: CUSTOM_TASKS, eventualTasks: EVENTUAL_TASKS })); } catch {}
-}
-
-const _cached = normalizePayload(loadCachedRaw());
-const _hasCache = !!loadCachedRaw();
-let DATA = _hasCache ? _cached.data : INITIAL_DATA; // { [taskId]: { steps: [...], links: [{name,url},...] } }
-let CUSTOM_TASKS = _hasCache ? _cached.customTasks : [];
-let EVENTUAL_TASKS = _hasCache ? _cached.eventualTasks : [];
-
-function getTaskData(id) {
-  return DATA[id] || { steps: [], links: [] };
-}
-
-let activeId = null;
-let panelSteps = [];
-let panelLinks = [];
-let currentView = 'rutinario';
-
-// ── Render timeline ─────────────────────────────────────────────
-
-function isTaskDoneNow(taskId, weekKey) {
-  const d = getTaskData(taskId);
-  if (!d.doneWeekStart) return false;
-  const w = WEEKS.find(x => x.key === weekKey);
-  if (!w) return false;
-  const cur = getSlotWeekStart(w);
-  if (!cur) return false;
-  return d.doneWeekStart === cur.toISOString().slice(0,10);
-}
-
-function toggleRoutineDone(taskId, weekKey, ev) {
-  ev.stopPropagation();
-  const w = WEEKS.find(x => x.key === weekKey);
-  const cur = w ? getSlotWeekStart(w) : null;
-  const key = cur ? cur.toISOString().slice(0,10) : null;
-  const d = DATA[taskId] || { steps: [], links: [] };
-  const wasDone = key && d.doneWeekStart === key;
-  d.doneWeekStart = (wasDone || !key) ? null : key;
-  DATA[taskId] = d;
-  cachePayload();
-  renderCurrentView();
-  syncToJsonBin();
-}
-
-function toggleEventualDone(id, ev) {
-  ev.stopPropagation();
-  const t = EVENTUAL_TASKS.find(x => x.id === id);
-  if (!t) return;
-  t.done = !t.done;
-  cachePayload();
-  rebuildAreas();
-  renderCurrentView();
-  syncToJsonBin();
-}
-
-function taskCardHTML(task, color, weekKey) {
-  const d = getTaskData(task.id);
-  const hasSteps = d.steps && d.steps.filter(s=>s.trim()).length > 0;
-  const hasLinks = d.links && d.links.filter(l=>l.url.trim()).length > 0;
-  const isActive = activeId === task.id;
-  const isDone = isTaskDoneNow(task.id, weekKey);
-  return `
-    <div class="task-card ${color}${isActive?' active':''}${isDone?' done':''}" onclick="openPanel('${task.id}')" id="card-${task.id}">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:4px;">
-        <div class="task-title"><i class="ti ${task.icon}"></i>${task.title}</div>
-        <div class="task-check" onclick="toggleRoutineDone('${task.id}','${weekKey}', event)" title="Marcar como hecho esta semana">
-          <i class="ti ${isDone ? 'ti-square-rounded-check-filled' : 'ti-square-rounded'}"></i>
-        </div>
-      </div>
-      <div class="card-meta">
-        ${hasSteps ? `<span class="card-badge has-steps"><i class="ti ti-list-check"></i>${d.steps.filter(s=>s.trim()).length} pasos</span>` : ''}
-        ${hasLinks ? `<span class="card-badge has-links"><i class="ti ti-link"></i>${d.links.filter(l=>l.url.trim()).length} enlaces</span>` : ''}
-        ${!hasSteps && !hasLinks ? `<span class="card-badge"><i class="ti ti-click"></i>clic para editar</span>` : ''}
-      </div>
-    </div>`;
-}
-
-function cellHTML(tasks, color, weekKey) {
-  if (!tasks || !tasks.length) return `<div class="cell-empty"></div>`;
-  return `<div>${tasks.map(t => taskCardHTML(t, color, weekKey)).join('')}</div>`;
-}
-
-function renderCurrentView() {
-  if (currentView === 'puntual') renderEventualView(); else renderTimeline();
-}
-
-function switchView(view) {
-  currentView = view;
-  document.getElementById('tab-rutinario').classList.toggle('active', view === 'rutinario');
-  document.getElementById('tab-puntual').classList.toggle('active', view === 'puntual');
-  document.getElementById('view-rutinario').style.display = view === 'rutinario' ? '' : 'none';
-  document.getElementById('view-puntual').style.display = view === 'puntual' ? '' : 'none';
-  renderCurrentView();
-}
-
-function renderTimeline() {
-  const app = document.getElementById('app');
-
-  function weekCellHTML(w) {
-    const isCurrent = ACTIVE_WEEK_KEYS.has(w.key);
-    const cls = isCurrent ? `week-cell ${w.cls} current` : `week-cell ${w.cls}`;
-    const dateRange = getWeekDateRange(w);
-    return `<div class="${cls}">${w.label}${dateRange ? `<span class="fase-tag">${w.fase} · ${dateRange}</span>` : `<span class="fase-tag">${w.fase}</span>`}</div>`;
-  }
-
-  const w5 = WEEKS.slice(0,5).map(weekCellHTML).join('');
-  const w3 = WEEKS.slice(5).map(weekCellHTML).join('');
-
-  const weeksRow = `<div class="weeks-row">
-    <div class="label-spacer"></div>${w5}
-    <div class="divider-head"></div>${w3}
-  </div>`;
-
-  const areaRows = AREAS.map((area,idx) => {
-    const cols5 = WEEKS.slice(0,5).map(w=>cellHTML(area.tasks[w.key],area.color,w.key)).join('');
-    const cols3 = WEEKS.slice(5).map(w=>cellHTML(area.tasks[w.key],area.color,w.key)).join('');
-    const names = area.label.split('\n');
-    const sep = idx < AREAS.length-1 ? `<div class="sep-row"></div>` : '';
-    return `<div class="area-row">
-      <div class="area-label">
-        <div class="area-dot-label">
-          <div class="area-dot dot-${area.color}"></div>
-          <span class="area-name">${names.join('<br>')}</span>
-        </div>
-      </div>
-      ${cols5}<div class="area-divider"></div>${cols3}
-    </div>${sep}`;
-  }).join('');
-
-  app.innerHTML = weeksRow + areaRows;
-}
-
-// Devuelve el lunes de inicio de la ocurrencia actual de este slot de semana
-// (misma ventana -7..60 días que se usa para la etiqueta de fecha), o null
-// si esa ocurrencia no cae cerca de hoy.
-function getSlotWeekStart(w) {
-  const today = new Date();
-  for (let delta = -1; delta <= 3; delta++) {
-    const refDate = new Date(today.getFullYear(), today.getMonth() + delta + w.mOffset, 1);
-    const rY = refDate.getFullYear();
-    const rM = refDate.getMonth();
-    const mondays = [];
-    for (let i = 0; i < 6; i++) {
-      const m = nthMonday(rY, rM, i);
-      if (m.getMonth() === rM) mondays.push(m);
-    }
-    if (w.weekIdx >= mondays.length) continue;
-    const weekStart = mondays[w.weekIdx];
-    const diffDays = Math.round((weekStart - today) / 86400000);
-    if (diffDays >= -7 && diffDays <= 60) return weekStart;
-  }
+function parseDate(s) {
+  if (!s) return null;
+  const p = s.split('/');
+  if (p.length === 3) return new Date(+p[2], +p[1]-1, +p[0]);
   return null;
 }
 
-// Returns "2 jun" style short date range for a week slot, for current cycle
-function getWeekDateRange(w) {
-  const start = getSlotWeekStart(w);
-  if (!start) return null;
-  const fmt = d => `${d.getDate()} ${['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][d.getMonth()]}`;
-  return fmt(start);
+function getMonth(row) {
+  const d = parseDate(row[9]) || parseDate(row[10]);
+  return d ? d.getMonth() + 1 : null;
 }
 
-// ── Vista Puntual ────────────────────────────────────────────────
-
-function eventualCardHTML(t, color) {
-  const d = getTaskData(t.id);
-  const hasSteps = d.steps && d.steps.filter(s=>s.trim()).length > 0;
-  const hasLinks = d.links && d.links.filter(l=>l.url.trim()).length > 0;
-  const isActive = activeId === t.id;
-  return `
-    <div class="task-card ${color}${isActive?' active':''}${t.done?' done':''}" onclick="openPanel('${t.id}')" id="card-${t.id}">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:4px;">
-        <div class="task-title"><i class="ti ${t.icon||'ti-list'}"></i>${t.title}</div>
-        <div class="task-check" onclick="toggleEventualDone('${t.id}', event)" title="Marcar como hecha">
-          <i class="ti ${t.done ? 'ti-square-rounded-check-filled' : 'ti-square-rounded'}"></i>
-        </div>
-      </div>
-      <div class="card-meta">
-        ${hasSteps ? `<span class="card-badge has-steps"><i class="ti ti-list-check"></i>${d.steps.filter(s=>s.trim()).length} pasos</span>` : ''}
-        ${hasLinks ? `<span class="card-badge has-links"><i class="ti ti-link"></i>${d.links.filter(l=>l.url.trim()).length} enlaces</span>` : ''}
-        ${!hasSteps && !hasLinks ? `<span class="card-badge"><i class="ti ti-click"></i>clic para editar</span>` : ''}
-      </div>
-    </div>`;
+/* Clasifica el texto de "Escenario" en una de las 5 categorías del
+   filtro: implantacion (solo aparece el modelo, p.ej. "NTC90", sin
+   palabra Ampliación/Bajada/Apertura — es un centro nuevo con NTC),
+   ampliacion, bajada, reapertura (Apertura tras reforma) o cierre
+   (escenario vacío). */
+function escenarioCategoria(e) {
+  if (!e) return 'cierre';
+  if (e.startsWith('Ampliación')) return 'ampliacion';
+  if (e.startsWith('Bajada')) return 'bajada';
+  if (e.startsWith('Apertura')) return 'reapertura';
+  if (/^NTC\d+$/.test(e)) return 'implantacion';
+  return '';
 }
 
-function renderEventualView() {
-  const wrap = document.getElementById('eventual-app');
-  const html = AREAS.map((area, idx) => {
-    const tasks = (EVENTUAL_TASKS || []).filter(t => t.areaId === area.id);
-    const sorted = [...tasks].sort((a,b) => (a.done === b.done) ? 0 : (a.done ? 1 : -1));
-    const cardsHTML = sorted.length
-      ? `<div class="eventual-cards">${sorted.map(t => eventualCardHTML(t, area.color)).join('')}</div>`
-      : `<div class="eventual-empty">Sin tareas puntuales</div>`;
-    const names = area.label.split('\n');
-    const sep = idx < AREAS.length-1 ? `<div class="sep-row"></div>` : '';
-    return `<div class="area-row" style="grid-template-columns:130px 1fr;">
-      <div class="area-label">
-        <div class="area-dot-label">
-          <div class="area-dot dot-${area.color}"></div>
-          <span class="area-name">${names.join('<br>')}</span>
-        </div>
-      </div>
-      ${cardsHTML}
-    </div>${sep}`;
-  }).join('');
-  wrap.innerHTML = html;
+function badgeClass(e) {
+  if (!e) return 'b-red';
+  if (e.startsWith('Ampliación')) return 'b-green';
+  if (e.startsWith('Bajada')) return 'b-amber';
+  if (e.startsWith('Apertura')) return 'b-teal';
+  if (e.match(/^NTC/)) return 'b-blue';
+  return 'b-gray';
 }
 
-// ── Panel ────────────────────────────────────────────────────────
-
-function openPanel(id) {
-  const task = TASK_MAP[id];
-  if (!task) return;
-  activeId = id;
-
-  const d = getTaskData(id);
-  panelSteps = [...(d.steps || [])];
-  panelLinks = (d.links || []).map(l => ({ ...l }));
-
-  // Header
-  document.getElementById('panel-title').textContent = task.title;
-  document.getElementById('panel-meta').textContent = task.areaLabel + ' · ' + task.week;
-  const bar = document.getElementById('panel-bar');
-  bar.className = 'panel-color-bar ' + task.areaColor;
-  const saveBtn = document.getElementById('btn-save-panel');
-  saveBtn.className = 'btn-save-panel' + (task.areaColor === 'blue' ? ' blue-area' : '');
-  document.getElementById('btn-delete-task').style.display = task.custom ? 'inline-flex' : 'none';
-
-  renderPanelSteps();
-  renderPanelLinks();
-
-  document.getElementById('overlay').classList.add('open');
-  document.getElementById('panel').classList.add('open');
-  document.getElementById('page').classList.add('panel-open');
-  renderCurrentView();
-}
-
-function closePanel() {
-  activeId = null;
-  document.getElementById('overlay').classList.remove('open');
-  document.getElementById('panel').classList.remove('open');
-  document.getElementById('page').classList.remove('panel-open');
-  renderCurrentView();
-}
-
-// ── Steps ────────────────────────────────────────────────────────
-
-function renderPanelSteps() {
-  const list = document.getElementById('steps-list');
-  if (!panelSteps.length) { list.innerHTML = ''; return; }
-  list.innerHTML = panelSteps.map((s,i) => `
-    <div class="step-row" id="sr-${i}" draggable="true"
-      ondragstart="dragStart(event,'step',${i})"
-      ondragover="dragOverRow(event,'step',${i})"
-      ondragleave="dragLeaveRow(event)"
-      ondrop="dropRow(event,'step',${i})"
-      ondragend="dragEnd(event)">
-      <div class="reorder-col" title="Arrastrar para reordenar"><i class="ti ti-grip-vertical"></i></div>
-      <span class="step-num">${i+1}</span>
-      <textarea class="step-text" id="st-${i}" rows="1"
-        oninput="syncStep(${i},this)"
-        onkeydown="stepKey(event,${i})"
-        placeholder="Describe el paso...">${escHtml(s)}</textarea>
-      <button class="step-del" onclick="delStep(${i})" title="Eliminar paso"><i class="ti ti-x"></i></button>
-    </div>`).join('');
-  panelSteps.forEach((_,i) => autoResize(document.getElementById('st-'+i)));
-}
-
-function autoResize(el) {
-  if (!el) return;
-  el.style.height = 'auto';
-  el.style.height = el.scrollHeight + 'px';
-}
-
-function syncStep(i, el) {
-  panelSteps[i] = el.value;
-  autoResize(el);
-}
-
-function stepKey(e, i) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    panelSteps.splice(i+1, 0, '');
-    renderPanelSteps();
-    setTimeout(() => {
-      const next = document.getElementById('st-'+(i+1));
-      if (next) next.focus();
-    }, 0);
-  }
-  if (e.key === 'Backspace' && panelSteps[i] === '' && panelSteps.length > 1) {
-    e.preventDefault();
-    delStep(i);
-    setTimeout(() => {
-      const prev = document.getElementById('st-'+Math.max(0,i-1));
-      if (prev) { prev.focus(); const len = prev.value.length; prev.setSelectionRange(len,len); }
-    }, 0);
-  }
-}
-
-function addStep() {
-  panelSteps.push('');
-  renderPanelSteps();
-  setTimeout(() => {
-    const last = document.getElementById('st-'+(panelSteps.length-1));
-    if (last) last.focus();
-  }, 0);
-}
-
-function delStep(i) {
-  panelSteps.splice(i, 1);
-  renderPanelSteps();
-}
-
-// ── Drag & drop reorder (steps + links) ────────────────────────────
-
-let dragInfo = { type: null, index: null };
-
-function dragStart(e, type, i) {
-  dragInfo = { type, index: i };
-  e.dataTransfer.effectAllowed = 'move';
-  try { e.dataTransfer.setData('text/plain', String(i)); } catch {}
-  e.currentTarget.classList.add('dragging');
-}
-
-function dragOverRow(e, type, i) {
-  if (dragInfo.type !== type) return;
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  const row = e.currentTarget;
-  row.classList.remove('drag-over-top', 'drag-over-bottom');
-  if (i === dragInfo.index) return;
-  const rect = row.getBoundingClientRect();
-  const before = (e.clientY - rect.top) < rect.height / 2;
-  row.classList.add(before ? 'drag-over-top' : 'drag-over-bottom');
-}
-
-function dragLeaveRow(e) {
-  e.currentTarget.classList.remove('drag-over-top', 'drag-over-bottom');
-}
-
-function dropRow(e, type, targetIndex) {
-  if (dragInfo.type !== type || dragInfo.index === null) return;
-  e.preventDefault();
-  const row = e.currentTarget;
-  const rect = row.getBoundingClientRect();
-  const before = (e.clientY - rect.top) < rect.height / 2;
-  let insertAt = before ? targetIndex : targetIndex + 1;
-
-  const list = type === 'step' ? panelSteps : panelLinks;
-  const from = dragInfo.index;
-  if (from === insertAt || from === insertAt - 1) {
-    row.classList.remove('drag-over-top', 'drag-over-bottom');
-    return;
-  }
-  const [item] = list.splice(from, 1);
-  if (from < insertAt) insertAt--;
-  list.splice(insertAt, 0, item);
-
-  if (type === 'step') renderPanelSteps(); else renderPanelLinks();
-}
-
-function dragEnd(e) {
-  document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
-  document.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(el =>
-    el.classList.remove('drag-over-top', 'drag-over-bottom'));
-  dragInfo = { type: null, index: null };
-}
-
-// ── Links ────────────────────────────────────────────────────────
-
-function renderPanelLinks() {
-  const list = document.getElementById('links-list');
-  if (!panelLinks.length) { list.innerHTML = ''; return; }
-  list.innerHTML = panelLinks.map((l,i) => {
-    const hasUrl = l.url && l.url.trim();
-    return `
-      <div class="link-row-panel" id="lr-${i}" draggable="true"
-        ondragstart="dragStart(event,'link',${i})"
-        ondragover="dragOverRow(event,'link',${i})"
-        ondragleave="dragLeaveRow(event)"
-        ondrop="dropRow(event,'link',${i})"
-        ondragend="dragEnd(event)">
-        <div class="reorder-col" title="Arrastrar para reordenar"><i class="ti ti-grip-vertical"></i></div>
-        <input class="link-name-inp" id="ln-${i}" placeholder="Nombre" value="${escAttr(l.name||'')}"
-          oninput="syncLinkName(${i},this)">
-        <input class="link-url-inp" id="lu-${i}" type="url" placeholder="https://…" value="${escAttr(l.url||'')}"
-          oninput="syncLinkUrl(${i},this)">
-        <a class="link-go${hasUrl?'':' disabled'}" href="${hasUrl?escAttr(l.url):'#'}"
-          target="_blank" rel="noopener" title="Abrir enlace" id="lg-${i}">
-          <i class="ti ti-external-link"></i>
-        </a>
-        <button class="link-del-btn" onclick="delLink(${i})" title="Eliminar enlace">
-          <i class="ti ti-trash"></i>
-        </button>
-      </div>`;
-  }).join('');
-}
-
-function syncLinkName(i,el) { panelLinks[i].name = el.value; }
-function syncLinkUrl(i,el) {
-  panelLinks[i].url = el.value;
-  const go = document.getElementById('lg-'+i);
-  if (go) { const v=el.value.trim(); go.href=v||'#'; go.classList.toggle('disabled',!v); }
-}
-function addLink() {
-  panelLinks.push({ name:'', url:'' });
-  renderPanelLinks();
-  setTimeout(() => {
-    const last = document.getElementById('ln-'+(panelLinks.length-1));
-    if (last) last.focus();
-  }, 0);
-}
-function delLink(i) { panelLinks.splice(i,1); renderPanelLinks(); }
-
-// ── Sincronización JSONBin ─────────────────────────────────────────
-
-function setSyncStatus(state, text) {
-  const badge = document.getElementById('sync-badge');
-  const txt = document.getElementById('sync-text');
-  if (!badge || !txt) return;
-  txt.textContent = text;
-  const icons = { loading: 'ti-loader', ok: 'ti-cloud-check', err: 'ti-cloud-off', local: 'ti-device-floppy' };
-  const icon = badge.querySelector('i');
-  if (icon) icon.className = 'ti ' + (icons[state] || 'ti-cloud');
-}
-
-async function initData() {
-  if (!JSONBIN_CONFIGURED) {
-    setSyncStatus('local', 'Bin no configurado — usando copia local');
-    rebuildAreas();
-    switchView(currentView);
-    return;
-  }
-  setSyncStatus('loading', 'Cargando datos…');
-  try {
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const json = await res.json();
-    const norm = normalizePayload(json.record);
-    const hasContent = Object.keys(norm.data).length || norm.customTasks.length || norm.eventualTasks.length;
-    if (hasContent) {
-      DATA = norm.data;
-      CUSTOM_TASKS = norm.customTasks;
-      EVENTUAL_TASKS = norm.eventualTasks;
-      cachePayload();
-      setSyncStatus('ok', 'Datos actualizados');
-    } else {
-      setSyncStatus('local', 'Bin vacío — pulsa "Sincronizar" para subir tu copia');
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const cols = []; let cur = '', inQ = false;
+    for (let c = 0; c < line.length; c++) {
+      if (line[c] === '"') { inQ = !inQ; }
+      else if (line[c] === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+      else cur += line[c];
     }
-  } catch (e) {
-    setSyncStatus('err', 'Sin conexión — usando última copia local');
+    cols.push(cur.trim());
+    while (cols.length < 11) cols.push('');
+    rows.push(cols);
   }
-  rebuildAreas();
-  switchView(currentView);
+  return rows;
 }
 
-async function syncToJsonBin() {
-  if (!JSONBIN_CONFIGURED) {
-    showToast('Falta configurar JSONBIN_BIN_ID en el código');
-    return;
-  }
-  setSyncStatus('loading', 'Guardando en la nube…');
-  try {
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER_KEY },
-      body: JSON.stringify({ data: DATA, customTasks: CUSTOM_TASKS, eventualTasks: EVENTUAL_TASKS })
+function mergeEdits(rows) {
+  rows.forEach(r => {
+    const key = rowKey(r);
+    const qcc = QCC_DATA[key] || {};
+    const existeEnJsonBin = editableData.hasOwnProperty(key);
+    if (!editableData[key]) editableData[key] = { tc:'', formacion:'', src:{} };
+    if (!editableData[key].src) editableData[key].src = {};
+    if (!existeEnJsonBin) {
+      if (qcc.tc) { editableData[key].tc = qcc.tc; editableData[key].src.tc = 'qcc'; }
+      if (qcc.formacion) { editableData[key].formacion = qcc.formacion; editableData[key].src.formacion = 'qcc'; }
+      if ((r[7]||'') && !editableData[key].tc) { editableData[key].tc = r[7]; editableData[key].src.tc = 'csv'; }
+      if ((r[8]||'') && !editableData[key].formacion) { editableData[key].formacion = r[8]; editableData[key].src.formacion = 'csv'; }
+    }
+  });
+}
+
+function showNotice(msg, type) {
+  const el = document.getElementById('noticeArea');
+  el.innerHTML = `<div class="notice notice-${type}">${msg}</div>`;
+  setTimeout(() => el.innerHTML = '', 5000);
+}
+
+function populateFilters() {
+  const tipos = [...new Set(allRows.map(r => r[5]).filter(Boolean))].sort();
+  const zonas = [...new Set(allRows.map(r => r[0]).filter(Boolean))].sort();
+  document.getElementById('sel-tipo').innerHTML = '<option value="">Todos los escenarios</option>' + tipos.map(t => `<option value="${t}">${t}</option>`).join('');
+  document.getElementById('sel-zona').innerHTML = '<option value="">Todas las zonas</option>' + zonas.map(z => `<option value="${z}">${z}</option>`).join('');
+}
+
+function updateCascadeFilters(changedId) {
+  const mes = document.getElementById('sel-mes').value;
+  const tipo = document.getElementById('sel-tipo').value;
+  const zona = document.getElementById('sel-zona').value;
+  const categoria = document.getElementById('sel-categoria').value;
+  const q = document.getElementById('buscar').value.toLowerCase();
+
+  function filteredExcluding(excludeId) {
+    return allRows.filter(r => {
+      if (excludeId !== 'sel-mes' && mes && getMonth(r) != mes) return false;
+      if (excludeId !== 'sel-tipo' && tipo && r[5] !== tipo) return false;
+      if (excludeId !== 'sel-zona' && zona && r[0] !== zona) return false;
+      if (excludeId !== 'sel-categoria' && categoria && escenarioCategoria(r[5]) !== categoria) return false;
+      if (q && ![r[0],r[1],r[2],r[3],r[4],r[5]].join(' ').toLowerCase().includes(q)) return false;
+      return true;
     });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    setSyncStatus('ok', 'Sincronizado ✓');
-    showToast('Sincronizado con JSONBin ✓');
-  } catch (e) {
-    setSyncStatus('err', 'Error al sincronizar');
+  }
+
+  if (changedId !== 'sel-zona') {
+    const zonaRows = filteredExcluding('sel-zona');
+    const zonas = [...new Set(zonaRows.map(r => r[0]).filter(Boolean))].sort();
+    const zonaActual = zona;
+    document.getElementById('sel-zona').innerHTML = '<option value="">Todas las zonas</option>' + zonas.map(z => `<option value="${z}"${z===zonaActual?' selected':''}>${z}</option>`).join('');
+  }
+
+  if (changedId !== 'sel-tipo') {
+    const tipoRows = filteredExcluding('sel-tipo');
+    const tipos = [...new Set(tipoRows.map(r => r[5]).filter(Boolean))].sort();
+    const tipoActual = tipo;
+    document.getElementById('sel-tipo').innerHTML = '<option value="">Todos los escenarios</option>' + tipos.map(t => `<option value="${t}"${t===tipoActual?' selected':''}>${t}</option>`).join('');
+  }
+
+  if (changedId !== 'sel-mes') {
+    const mesRows = filteredExcluding('sel-mes');
+    const meses = [...new Set(mesRows.map(r => getMonth(r)).filter(Boolean))].sort((a,b)=>a-b);
+    const mesNombres = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const mesActual = mes;
+    document.getElementById('sel-mes').innerHTML = '<option value="">Todos los meses</option>' + meses.map(m => `<option value="${m}"${String(m)===mesActual?' selected':''}>${mesNombres[m]}</option>`).join('');
   }
 }
 
-// ── Nueva tarea (formulario) ────────────────────────────────────────
-
-function openTaskModal() {
-  const sel = document.getElementById('tm-week');
-  sel.innerHTML = WEEKS.map(w => `<option value="${w.key}">${w.fase} · ${w.label}</option>`).join('');
-  document.getElementById('tm-type').value = 'rutinaria';
-  document.getElementById('tm-area').value = 'centros';
-  document.getElementById('tm-title').value = '';
-  document.getElementById('tm-icon').value = '';
-  onTaskTypeChange();
-  document.getElementById('task-modal-overlay').classList.add('open');
-  document.getElementById('task-modal').classList.add('open');
+function highlightCP(text, cp) {
+  if (!cp || !text) return text || '';
+  return text.replace(new RegExp(`(${cp.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'), '<span class="cp-highlight">$1</span>');
 }
 
-function onTaskTypeChange() {
-  const isPuntual = document.getElementById('tm-type').value === 'puntual';
-  document.getElementById('tm-week-wrap').style.display = isPuntual ? 'none' : '';
-}
+function render() {
+  const mes = document.getElementById('sel-mes').value;
+  const tipo = document.getElementById('sel-tipo').value;
+  const zona = document.getElementById('sel-zona').value;
+  const categoria = document.getElementById('sel-categoria').value;
+  const q = document.getElementById('buscar').value.toLowerCase();
+  searchCP = document.getElementById('buscar-cp').value.trim();
 
-function closeTaskModal() {
-  document.getElementById('task-modal-overlay').classList.remove('open');
-  document.getElementById('task-modal').classList.remove('open');
-}
-
-function createTask() {
-  const type = document.getElementById('tm-type').value;
-  const areaId = document.getElementById('tm-area').value;
-  const title = document.getElementById('tm-title').value.trim();
-  const icon = document.getElementById('tm-icon').value.trim() || 'ti-list';
-  if (!title) { showToast('Ponle un título a la tarea'); return; }
-
-  const id = 'custom_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-  if (type === 'puntual') {
-    EVENTUAL_TASKS.push({ id, areaId, title, icon, done: false });
-  } else {
-    const weekKey = document.getElementById('tm-week').value;
-    CUSTOM_TASKS.push({ id, areaId, weekKey, title, icon });
+  let sortedRows = [...allRows];
+  if (sortCol !== null) {
+    sortedRows.sort((a, b) => {
+      let va, vb;
+      const thEl = document.querySelector(`th[data-col="${sortCol}"]`);
+      if (sortCol === 'tc') {
+        const ka = rowKey(a), kb = rowKey(b);
+        va = editableData[ka]?.tc || '';
+        vb = editableData[kb]?.tc || '';
+      } else if (sortCol === 'fe') {
+        const ka = rowKey(a), kb = rowKey(b);
+        va = editableData[ka]?.formacion || '';
+        vb = editableData[kb]?.formacion || '';
+      } else {
+        va = a[sortCol] || '';
+        vb = b[sortCol] || '';
+      }
+      if (thEl && thEl.dataset.date) {
+        const parseD = s => { if(!s) return 0; const p=s.split('/'); return p.length===3?new Date(+p[2],+p[1]-1,+p[0]).getTime():0; };
+        va = parseD(va); vb = parseD(vb);
+        if (!va && !vb) return 0;
+        if (!va) return 1;
+        if (!vb) return -1;
+        return (va - vb) * sortDir;
+      }
+      return va.localeCompare(vb, 'es', {numeric:true}) * sortDir;
+    });
   }
-  cachePayload();
-  closeTaskModal();
-  rebuildAreas();
-  renderCurrentView();
-  showToast('Tarea creada ✓ — sincronizando…');
-  syncToJsonBin();
+
+  let rows = sortedRows.filter(r => {
+    if (mes && getMonth(r) != mes) return false;
+    if (tipo && r[5] !== tipo) return false;
+    if (zona && r[0] !== zona) return false;
+    if (categoria && escenarioCategoria(r[5]) !== categoria) return false;
+    if (q && ![r[0],r[1],r[2],r[3],r[4],r[5]].join(' ').toLowerCase().includes(q)) return false;
+    if (searchCP && !(r[6]||'').includes(searchCP)) return false;
+    return true;
+  });
+
+  let altas=0,amp=0,baj=0,cie=0;
+  rows.forEach(r => { const e=r[5]||''; if(!e) cie++; else if(e.startsWith('Ampliación')) amp++; else if(e.startsWith('Bajada')) baj++; else altas++; });
+  document.getElementById('st-total').textContent = rows.length;
+  document.getElementById('st-altas').textContent = altas;
+  document.getElementById('st-amp').textContent = amp;
+  document.getElementById('st-baj').textContent = baj;
+  document.getElementById('st-cie').textContent = cie;
+  document.getElementById('count-label').textContent = rows.length + ' de ' + allRows.length + ' registros' + (searchCP ? ` · CP "${searchCP}"` : '');
+
+  const tbody = document.getElementById('tbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:2rem;color:#888">No hay resultados</td></tr>'; return; }
+
+  tbody.innerHTML = rows.map(r => {
+    const key = rowKey(r);
+    const ed = editableData[key] || {};
+    const tc = ed.tc || '', form = ed.formacion || '';
+    const tcFromQCC = ed.src?.tc === 'qcc', formFromQCC = ed.src?.formacion === 'qcc';
+    const esc = r[5] || '';
+    const badge = esc ? `<span class="badge ${badgeClass(esc)}">${esc}</span>` : '<span style="color:#1a1a18;font-style:italic;font-size:11px">cierre</span>';
+    const cpsDisplay = searchCP ? highlightCP(r[6]||'', searchCP) : (r[6]||'');
+    const cpMatch = searchCP && (r[6]||'').includes(searchCP);
+    // ── ÚNICO CAMBIO EN JS: clase de fila según escenario ──
+    const rowClass = cpMatch ? 'cp-match' : (!esc ? 'row-cierre' : esc.startsWith('Ampliación') ? 'row-amp' : esc.startsWith('Bajada') ? 'row-baja' : 'row-alta');
+    return `<tr class="${rowClass}">
+      <td>${r[0]||''}</td><td><strong>${r[1]||''}</strong></td><td>${r[2]||''}</td>
+      <td>${r[3]||''}</td><td>${r[4]||''}</td><td>${badge}</td>
+      <td class="cps-cell">${cpsDisplay}</td>
+      <td><span class="editable-cell${tc?'':' empty-cell'}${tcFromQCC?' from-qcc':''}" contenteditable="true" data-key="${key}" data-field="tc" onblur="saveCell(this)" onfocus="clearHint(this)">${tc||'Haz clic para editar'}</span></td>
+      <td><span class="editable-cell${form?'':' empty-cell'}${formFromQCC?' from-qcc':''}" contenteditable="true" data-key="${key}" data-field="formacion" onblur="saveCell(this)" onfocus="clearHint(this)">${form||'Haz clic para editar'}</span></td>
+      <td>${r[9]||''}</td>
+      <td>${r[10]||''}</td>
+    </tr>`;
+  }).join('');
 }
 
-function deleteTask() {
-  if (!activeId) return;
-  if (!confirm('¿Eliminar esta tarea? No se puede deshacer.')) return;
-  CUSTOM_TASKS = CUSTOM_TASKS.filter(ct => ct.id !== activeId);
-  EVENTUAL_TASKS = EVENTUAL_TASKS.filter(et => et.id !== activeId);
-  delete DATA[activeId];
-  cachePayload();
-  rebuildAreas();
-  closePanel();
-  showToast('Tarea eliminada ✓ — sincronizando…');
-  syncToJsonBin();
+function clearHint(el) { if(el.classList.contains('empty-cell')){ el.textContent=''; el.classList.remove('empty-cell'); } }
+
+function saveCell(el) {
+  const key = el.dataset.key, field = el.dataset.field, val = el.textContent.trim();
+  if (!editableData[key]) editableData[key] = {tc:'',formacion:'',src:{}};
+  if (!editableData[key].src) editableData[key].src = {};
+  editableData[key][field] = val;
+  editableData[key].src[field] = 'manual';
+  el.classList.remove('from-qcc');
+  if (!val) { el.textContent='Haz clic para editar'; el.classList.add('empty-cell'); } else el.classList.remove('empty-cell');
+  scheduleSave();
 }
 
-// ── Save ─────────────────────────────────────────────────────────
+function initWithCSV(rawText) {
+  allRows = parseCSV(rawText);
+  const migrated = migrateOldKeys(allRows);
+  mergeEdits(allRows);
+  if (migrated) scheduleSave();
+  populateFilters();
+  render();
+  const date = localStorage.getItem('qcc_csv_date_2026') || '';
+  document.getElementById('csvStatus').innerHTML = `<strong>${allRows.length} registros</strong>${date ? ' · CSV cargado el ' + date : ''}`;
+}
 
-function savePanel() {
-  if (!activeId) return;
-  DATA[activeId] = {
-    steps: panelSteps.filter(s => s.trim()),
-    links: panelLinks.filter(l => l.url.trim() || l.name.trim())
+function saveCSVToStorage(rawText) {
+  try {
+    localStorage.setItem('qcc_csv_2026', rawText);
+    localStorage.setItem('qcc_csv_date_2026', new Date().toLocaleString('es-ES'));
+  } catch(e) { showNotice('CSV demasiado grande para guardarlo localmente. Tendrás que cargarlo cada vez.', 'blue'); }
+}
+
+async function uploadDatosToJsonBin(rows) {
+  setSyncStatus('loading', 'Subiendo datos...');
+  try {
+    if (datosBinId) {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${datosBinId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
+        body: JSON.stringify({ rows })
+      });
+      const json = await res.json();
+      if (!json.record) throw new Error('Error al actualizar');
+    } else {
+      const res = await fetch('https://api.jsonbin.io/v3/b', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Name': 'QCC Datos 2026' },
+        body: JSON.stringify({ rows })
+      });
+      const json = await res.json();
+      if (!json.metadata?.id) throw new Error('Error al crear bin');
+      datosBinId = json.metadata.id;
+      localStorage.setItem('qcc_datos_bin_2026', datosBinId);
+    }
+    setSyncStatus('ok', 'Datos subidos ✓');
+    return true;
+  } catch(e) {
+    setSyncStatus('err', 'Error al subir datos');
+    return false;
+  }
+}
+
+function handleFile(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = async ev => {
+    const text = ev.target.result;
+    const rows = parseCSV(text);
+    allRows = rows;
+    const migrated = migrateOldKeys(allRows);
+    mergeEdits(allRows);
+    if (migrated) scheduleSave();
+    populateFilters();
+    render();
+    hideDropOverlay();
+    document.getElementById('csvStatus').innerHTML = `<strong>${allRows.length} registros</strong> · Subiendo a JSONBin...`;
+    const ok = await uploadDatosToJsonBin(rows);
+    if (ok) {
+      showNotice('Datos actualizados y subidos a JSONBin. Todos los usuarios verán los nuevos datos.', 'green');
+      document.getElementById('csvStatus').innerHTML = `<strong>${allRows.length} registros</strong> · Datos en JSONBin`;
+    } else {
+      showNotice('Datos cargados localmente, pero no se pudieron subir a JSONBin.', 'blue');
+      document.getElementById('csvStatus').innerHTML = `<strong>${allRows.length} registros</strong> · Solo local`;
+    }
   };
-  cachePayload();
-  closePanel();
-  showToast('Guardado ✓ — sincronizando…');
-  syncToJsonBin();
+  r.readAsText(file, 'UTF-8');
 }
 
-// ── Utils ────────────────────────────────────────────────────────
-
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function escAttr(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+function exportCSV() {
+  if (!allRows.length) return alert('No hay datos cargados');
+  const header = ['zona_tiendas','num_centro','denominacion','poblacion','provincia','escenario','cps_que_servimos','tiendas_que_dejan_de_servir_tc','fecha_1er_dia_formacion','fecha_cierre_servicio','fecha_1er_servicio'];
+  const rows = allRows.map(r => { const key=rowKey(r),out=[...r]; out[7]=editableData[key]?.tc||''; out[8]=editableData[key]?.formacion||''; return out.map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(','); });
+  const blob = new Blob([header.join(',')+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='QCC_expansion_online_2026.csv'; a.click();
 }
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closePanel();
+function exportXLSX() {
+  if (!allRows.length) return alert('No hay datos cargados');
+
+  // Colores de fila (ARGB: FF + hex sin #)
+  const FILL = {
+    amp:    'FFD9EAD3',
+    cierre: 'FFF4CCCC',
+    baja:   'FFFCE5CD',
+    alta:   'FFFFFFFF'
+  };
+
+  // Recoger solo las filas actualmente visibles (respeta filtros)
+  const mes   = document.getElementById('sel-mes').value;
+  const tipo  = document.getElementById('sel-tipo').value;
+  const zona  = document.getElementById('sel-zona').value;
+  const categoria = document.getElementById('sel-categoria').value;
+  const q     = document.getElementById('buscar').value.toLowerCase();
+  const cp    = document.getElementById('buscar-cp').value.trim();
+
+  const visibleRows = allRows.filter(r => {
+    if (mes  && getMonth(r) != mes)  return false;
+    if (tipo && r[5] !== tipo)       return false;
+    if (zona && r[0] !== zona)       return false;
+    if (categoria && escenarioCategoria(r[5]) !== categoria) return false;
+    if (q && ![r[0],r[1],r[2],r[3],r[4],r[5]].join(' ').toLowerCase().includes(q)) return false;
+    if (cp && !(r[6]||'').includes(cp)) return false;
+    return true;
+  });
+
+  const header = ['Zona','Centro','Denominación','Población','Provincia','Escenario','CPs que servimos','Tiendas que dejan TC','Fecha formación','Cierre servicio','1er servicio'];
+  const dataRows = visibleRows.map(r => {
+    const key = rowKey(r), out = [...r];
+    out[7] = editableData[key]?.tc || '';
+    out[8] = editableData[key]?.formacion || '';
+    return out;
+  });
+
+  const wsData = [header, ...dataRows];
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  ws['!cols'] = [7,8,20,15,14,22,25,20,13,12,12].map(w=>({wch:w}));
+
+  // Aplicar color de fondo a cada fila de datos
+  visibleRows.forEach((r, i) => {
+    const esc = r[5] || '';
+    const fillKey = !esc ? 'cierre' : esc.startsWith('Ampliación') ? 'amp' : esc.startsWith('Bajada') ? 'baja' : 'alta';
+    const fgColor = FILL[fillKey];
+    const rowIdx = i + 1; // fila 0 = header
+    for (let c = 0; c < 11; c++) {
+      const cellRef = XLSX.utils.encode_cell({r: rowIdx, c});
+      if (!ws[cellRef]) ws[cellRef] = {v:'', t:'s'};
+      ws[cellRef].s = {
+        fill: { patternType: 'solid', fgColor: { rgb: fgColor } },
+        font: { name: 'Calibri', sz: 11 },
+        alignment: { wrapText: true, vertical: 'top' }
+      };
+    }
+  });
+
+  // Estilo cabecera: mayúsculas, fondo gris, borde línea continua
+  const borderSolid = { style:'thin', color:{ rgb:'FF999999' } };
+  for (let c = 0; c < 11; c++) {
+    const cellRef = XLSX.utils.encode_cell({r:0, c});
+    if (!ws[cellRef]) ws[cellRef] = {v: header[c], t:'s'};
+    ws[cellRef].v = header[c].toUpperCase();
+    ws[cellRef].s = {
+      fill: { patternType:'solid', fgColor:{ rgb:'FFD9D9D9' } },
+      font: { name:'Calibri', sz:11, bold:true, color:{ rgb:'FF1A1A18' } },
+      alignment: { vertical:'center', wrapText:true },
+      border: { top:borderSolid, bottom:borderSolid, left:borderSolid, right:borderSolid }
+    };
+  }
+
+  // Borde micropunto en todas las celdas de datos
+  const borderDot = { style:'hair', color:{ rgb:'FFCCCCCC' } };
+  visibleRows.forEach((r, i) => {
+    for (let c = 0; c < 11; c++) {
+      const cellRef = XLSX.utils.encode_cell({r: i+1, c});
+      if (!ws[cellRef]) ws[cellRef] = {v:'', t:'s'};
+      ws[cellRef].s = {
+        ...ws[cellRef].s,
+        border: { top:borderDot, bottom:borderDot, left:borderDot, right:borderDot }
+      };
+    }
+  });
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'QCC 2026');
+  XLSX.writeFile(wb, 'QCC_expansion_online_2026.xlsx');
+}
+
+function showDropOverlay() { document.getElementById('dropOverlay').classList.add('show'); }
+function hideDropOverlay() { document.getElementById('dropOverlay').classList.remove('show'); }
+
+const dropArea = document.getElementById('dropArea');
+const fileInput = document.getElementById('fileInput');
+dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('active'); });
+dropArea.addEventListener('dragleave', () => dropArea.classList.remove('active'));
+dropArea.addEventListener('drop', e => { e.preventDefault(); dropArea.classList.remove('active'); handleFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+document.getElementById('dropOverlay').addEventListener('click', e => { if(e.target===document.getElementById('dropOverlay')) hideDropOverlay(); });
+['sel-mes','sel-tipo','sel-zona','sel-categoria'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => {
+    updateCascadeFilters(id);
+    render();
+  });
+});
+document.getElementById('buscar').addEventListener('input', render);
+document.getElementById('buscar-cp').addEventListener('input', render);
+
+async function loadDatosFromBin() {
+  if (!datosBinId) return null;
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${datosBinId}/latest`, {
+      headers: { 'X-Master-Key': JSONBIN_KEY }
+    });
+    const json = await res.json();
+    return json.record?.rows || null;
+  } catch(e) { return null; }
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadEditsFromDrive();
+  const remoteDatos = await loadDatosFromBin();
+  if (remoteDatos) {
+    allRows = remoteDatos;
+  } else {
+    allRows = BUILTIN_ROWS;
+  }
+  const migrated = migrateOldKeys(allRows);
+  mergeEdits(allRows);
+  if (migrated) scheduleSave();
+  populateFilters();
+  render();
+  if (remoteDatos) {
+    document.getElementById('csvStatus').innerHTML = `<strong>${allRows.length} registros</strong> · Datos desde JSONBin`;
+  } else {
+    document.getElementById('csvStatus').innerHTML = `<strong>${allRows.length} registros</strong> · Datos integrados en el fichero`;
+  }
 });
 
-initData();
+document.querySelectorAll('th[data-col]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col === 'tc' ? 'tc' : th.dataset.col === 'fe' ? 'fe' : parseInt(th.dataset.col);
+    if (sortCol === col) {
+      sortDir *= -1;
+    } else {
+      sortCol = col;
+      sortDir = 1;
+    }
+    document.querySelectorAll('th').forEach(t => t.classList.remove('sort-asc','sort-desc'));
+    th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+    render();
+  });
+});
 </script>
 </body>
 </html>
